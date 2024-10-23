@@ -8,7 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Ramsey\Uuid\Uuid;
 use Laravel\Sanctum\HasApiTokens;
-use App\Notifications\ResetPasswordNotification as resetpwnotif;
+// use App\Notifications\ResetPasswordNotification as resetpwnotif;
 
 class User extends Authenticatable
 {
@@ -59,13 +59,13 @@ class User extends Authenticatable
 
     public function tasks()
     {
-        return $this->belongsTo(Task::class, reports)->withPivot('photo', 'description', 'logitude', 'latitude', 'date');
+        return $this->belongsToMany(Task::class, 'reports')->withPivot('photo', 'description', 'logitude', 'latitude', 'date');
     }
 
-    public function sendPasswordResetNotification($token)
-    {
-        $this->notify(new resetpwnotif($token));
-    }
+    // public function sendPasswordResetNotification($token)
+    // {
+    //     $this->notify(new resetpwnotif($token));
+    // }
 
     protected static function boot()
     {
