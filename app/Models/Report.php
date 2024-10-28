@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
+use App\Enums\ReportStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Ramsey\Uuid\Uuid;
+use Illuminate\Support\Str;
 
 class Report extends Model
 {
@@ -13,6 +15,10 @@ class Report extends Model
     public $incrementing = false;
 
     protected $keyType = 'string';
+
+    protected $casts = [
+        'status' => ReportStatus::class, // Menggunakan enum untuk casting
+    ];
 
     public function files()
     {
@@ -25,7 +31,7 @@ class Report extends Model
         parent::boot();
 
         static::creating(function ($model) {
-            $model->{$model->getKeyName()} = Uuid::uuid4()->toString();
+            $model->id = (string) Str::uuid(); // Menghasilkan UUID saat entri baru dibuat
         });
     }
 }

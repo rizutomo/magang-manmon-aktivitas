@@ -16,7 +16,12 @@ class Task extends Model
 
     public function users()
     {
-        return $this->belongsToMany(User::class, 'reports')->withPivot('photo', 'description', 'logitude', 'latitude', 'date');
+        return $this->belongsToMany(User::class, 'reports')->withPivot('photo', 'description', 'longitude', 'latitude', 'date');
+    }
+
+    public function programs()
+    {
+        return $this->belongsTo(Program::class);
     }
 
     //UUID boot

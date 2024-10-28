@@ -20,18 +20,22 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
     //CRUD Program
     Route::get('program', [ProgramController::class, 'index'])->name('program.index');
+    Route::get('programProgress', [ProgramController::class, 'programWithProgress'])->name('program.index');
     Route::get('program/{id}', [ProgramController::class, 'show'])->name('program.show');
-    Route::get('program/user/', [ProgramController::class, 'getByUserId'])->name('program.getByUserId');
+    Route::get('user/program/', [ProgramController::class, 'getByUserId'])->name('program.getByUserId');
+    Route::get('program/user/count', [ProgramController::class, 'countUserProgram'])->name('program.countUserProgram');
     Route::post('program', [ProgramController::class, 'store'])->name('program.store');
     Route::put('program/{id}', [ProgramController::class, 'update'])->name('program.update');
     Route::delete('program/{id}', [ProgramController::class, 'destroy'])->name('program.destroy');
     
     //CRUD Task
     Route::get('program-{program_id}/task', [TaskController::class, 'index'])->name('task.index');
-    Route::get('task/user/', [TaskController::class, 'getByUserId'])->name('task.getByUserId');
+    Route::get('user/task', [TaskController::class, 'getByUserId'])->name('task.getByUserId');
     Route::get('task/{id}', [TaskController::class, 'show'])->name('task.show');
     Route::post('task', [TaskController::class, 'store'])->name('task.store');
+    Route::post('task/{id}/attachTeam', [TaskController::class, 'attachTeam'])->name('task.attachTeam');
     Route::put('task/{id}', [TaskController::class, 'update'])->name('task.update');
+    Route::delete('task/{id}/detachTeam', [TaskController::class, 'detachTeam'])->name('task.detachTeam');
     Route::delete('task/{id}', [TaskController::class, 'destroy'])->name('task.destroy');
     
     //CRUD Team

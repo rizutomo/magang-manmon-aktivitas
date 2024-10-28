@@ -59,7 +59,7 @@ class User extends Authenticatable
 
     public function tasks()
     {
-        return $this->belongsToMany(Task::class, 'reports')->withPivot('photo', 'description', 'logitude', 'latitude', 'date');
+        return $this->belongsToMany(Task::class, 'reports')->withPivot('photo', 'description', 'longitude', 'latitude', 'date');
     }
 
     // public function sendPasswordResetNotification($token)

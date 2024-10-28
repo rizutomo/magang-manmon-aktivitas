@@ -5,10 +5,43 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Program;
 use Illuminate\Support\Facades\Validator;
+use App\Enums\ReportStatus;
+use Response;
 
 
 class ProgramController extends Controller
 {
+    public function programWithProgress()
+    {
+        $programs = Program::with(['tasks.users' => function ($query) {
+            $query->withPivot('status');
+        }])->get();
+
+        // dd($programs);
+
+        $programsData = $programs->map(function ($program) {
+            $totalTasks = $program->tasks->count();
+
+            $completedTasks = $program->tasks->filter(function ($task) {
+                return $task->users->every(function ($user) {
+                    return $user->pivot->status === ReportStatus::Diterima->value;
+                });
+            })->count();
+
+            return [
+                'id' => $program->id,
+                'name' => $program->name,
+                'start_date' => $program->start_date,
+                'end_date' => $program->end_date,
+                'total_tasks' => $totalTasks,
+                'completed_tasks' => $completedTasks,
+            ];
+        });
+
+        return response([
+            'programs' => $programsData
+        ], 200);
+    }
     public function index()
     {
         $programs = Program::all();
@@ -26,11 +59,14 @@ class ProgramController extends Controller
     {
         $user = $request->user(); 
         $programs = $user->programs()->get();
+        $totalProgram = $programs->count();
 
         return response([
-            'programs' => $programs
+            'programs' => $programs,
+            'total' => $totalProgram
         ], 200);
     }
+
 
     public function store(Request $request)
     {
@@ -51,7 +87,7 @@ class ProgramController extends Controller
 
         $program = New Program();
         $program->name = $request->name;
-        $program->supervisor_id = $request->user()->id;
+        $program->supervisor_id = $request->supervisor_id;
         $program->description = $request->description;
         $program->start_date = $request->start_date;
         $program->end_date = $request->end_date;

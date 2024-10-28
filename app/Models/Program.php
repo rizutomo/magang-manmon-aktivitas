@@ -18,6 +18,10 @@ class Program extends Model
     {
         return $this->belongsTo(Supervisor::class);
     }
+    public function tasks()
+    {
+        return $this->hasMany(Task::class);
+    }
 
     public function users()
     {

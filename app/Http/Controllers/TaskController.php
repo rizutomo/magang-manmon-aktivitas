@@ -21,8 +21,11 @@ class TaskController extends Controller
     {
         $user = $request->user();
         $tasks = $user->tasks()->get();
+        $totalTask = $tasks->count();
+
         return response([
             'tasks' => $tasks,
+            'total' => $totalTask
         ], 200);
     }
 
@@ -138,32 +141,32 @@ class TaskController extends Controller
         ], 204);
     }
 
-    public function attachTeam(Request $request, $task_id)
+    public function attachTeam(Request $request, $id)
     {
-        // $task = Task::find($task_id);
+        // $task = Task::find($id);
         $user = User::find($request->user_id);
         if(!$user){
             return response([
                 'message' => 'User tidak ditemukan'
             ], 404);
         }
-        $user->tasks()->attach($task_id);
+        $user->tasks()->attach($id);
         
         return response([
             'message' => 'Berhasil menambahkan anggota tim ke dalam kegiatan'
         ], 200);
     }
     
-    public function detachTeam(Request $request, $task_id)
+    public function detachTeam(Request $request, $id)
     {
-        // $task = Task::find($task_id);
+        // $task = Task::find($id);
         $user = User::find($request->user_id);
         if(!$user){
             return response([
                 'message' => 'User tidak ditemukan'
             ], 404);
         }
-        $user->tasks()->detach($task_id);
+        $user->tasks()->detach($id);
 
         return response([
             'message' => 'Berhasil menghapus anggota tim dari kegiatan'
