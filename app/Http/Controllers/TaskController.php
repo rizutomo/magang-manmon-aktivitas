@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Task;
 use App\Models\User;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class TaskController extends Controller
 {
@@ -14,6 +15,19 @@ class TaskController extends Controller
         $tasks = Task::where('program_id', $program_id)->get();
         return response([
             'tasks' => $tasks,
+        ], 200);
+    }
+    public function indexall()
+    {
+        $tasks = Task::all();
+        if(!$tasks){
+            return response([
+                'message' => 'Kegiatan tidak ditemukan'
+            ], 404);
+        }
+
+        return response([
+            'tasks' =>$tasks
         ], 200);
     }
 
@@ -149,8 +163,8 @@ class TaskController extends Controller
             return response([
                 'message' => 'User tidak ditemukan'
             ], 404);
-        }
-        $user->tasks()->attach($id);
+        };
+        $user->tasks()->attach($id,['id' => Str::uuid()]);
         
         return response([
             'message' => 'Berhasil menambahkan anggota tim ke dalam kegiatan'

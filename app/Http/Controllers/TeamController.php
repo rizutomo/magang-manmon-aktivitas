@@ -20,11 +20,11 @@ class TeamController extends Controller
 
     public function store(Request $request, string $program_id)
     {
-        if (count($request->id) !== count($request->role)) {
-            return response([
-                'message' => 'Jumlah user dan role harus sama.',
-            ], 400);
-        }
+        // if (count($request->id) !== count($request->role)) {
+        //     return response([
+        //         'message' => 'Jumlah user dan role harus sama.',
+        //     ], 400);
+        // }
 
         // foreach ($request->id as $index => $user_id) {
         $user = User::find($request->id);

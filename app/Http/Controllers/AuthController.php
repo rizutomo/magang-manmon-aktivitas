@@ -164,4 +164,12 @@ class AuthController extends Controller
 
         return response()->json(['message' => 'Password reset successfully']);
     }
+    public function validateToken(Request $request)
+    {
+        return response()->json([
+            'success' => true,
+            'message' => 'Token is valid.',
+            'user' => $request->user()
+        ], 200);
+    }
 }

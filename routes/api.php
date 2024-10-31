@@ -17,6 +17,7 @@ Route::get('user', [AuthController::class, 'getAllUser'])->middleware('auth:sanc
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('register', [AuthController::class, 'register']);
     Route::post('logout', [AuthController::class, 'logout'])->name('logout');
+    Route::get('validate-token', [AuthController::class, 'validateToken']);
 
     //CRUD Program
     Route::get('program', [ProgramController::class, 'index'])->name('program.index');
@@ -37,11 +38,15 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::put('task/{id}', [TaskController::class, 'update'])->name('task.update');
     Route::delete('task/{id}/detachTeam', [TaskController::class, 'detachTeam'])->name('task.detachTeam');
     Route::delete('task/{id}', [TaskController::class, 'destroy'])->name('task.destroy');
+    Route::get('task', [TaskController::class, 'indexall'])->name('task.indexall');
     
     //CRUD Team
     Route::get('program-{program_id}/team', [TeamController::class, 'show'])->name('team.show');
     Route::post('program-{program_id}/team', [TeamController::class, 'store'])->name('team.store');
     Route::put('program-{program_id}/team', [TeamController::class, 'store'])->name('team.store');
     Route::delete('program-{program_id}/team', [TeamController::class, 'store'])->name('team.store');
+
+    //CRUD Report
+    Route::post('report', [ReportController::class, 'submitReport'])->name('report.store');
 
 });
