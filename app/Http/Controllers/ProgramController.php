@@ -28,6 +28,10 @@ class ProgramController extends Controller
                 });
             })->count();
 
+            $coordinator = $program->users->filter(function ($user) {
+                return $user->pivot->role === 'koordinator';
+            })->pluck('name')->first();
+
             return [
                 'id' => $program->id,
                 'name' => $program->name,
@@ -35,6 +39,8 @@ class ProgramController extends Controller
                 'end_date' => $program->end_date,
                 'total_tasks' => $totalTasks,
                 'completed_tasks' => $completedTasks,
+                'description' => $program->description,
+                'coordinator' => $coordinator,
             ];
         });
 
@@ -72,6 +78,7 @@ class ProgramController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string',
+            'supervisor_id' => 'required|string',
             'description' => 'required|string',
             'start_date' => 'required|date',
             'end_date' => 'required|date',

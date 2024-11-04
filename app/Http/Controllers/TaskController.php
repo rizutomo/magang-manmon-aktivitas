@@ -31,6 +31,17 @@ class TaskController extends Controller
         ], 200);
     }
 
+    public function getBySector(Request $request)
+    {
+        $user = $request->user();
+        $tasks = $user->tasks()->get();
+        $totalTask = $tasks->count();
+
+        return response([
+            'tasks' => $tasks,
+            'total' => $totalTask
+        ], 200);
+    }
     public function getByUserId(Request $request)
     {
         $user = $request->user();

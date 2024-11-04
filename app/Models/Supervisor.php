@@ -55,6 +55,10 @@ class Supervisor extends Model
     {
         return $this->hasMany(Program::class);
     }
+    public function sectors()
+    {
+        return $this->belongsTo(Program::class);
+    }
 
     public function sendPasswordResetNotification($token)
     {
