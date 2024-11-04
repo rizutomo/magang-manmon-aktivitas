@@ -13,6 +13,7 @@ class ReportFile extends Model
     public $incrementing = false;
 
     protected $keyType = 'string';
+    protected $fillable = ['report_id', 'name', 'file_path'];
 
     public function reports()
     {
