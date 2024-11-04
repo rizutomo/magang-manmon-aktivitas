@@ -73,9 +73,9 @@ class ReportController extends Controller
     
             // Menyimpan dokumen report di tabel `report_file`
             if ($report) {
-                $reportId = $report->id;
-            if ($request->hasFile('document')) {
-                $document = $request->file('document');
+
+            if ($request->hasFile('documents')) {
+                foreach ($request->file('documents') as $document) {
                 $documentName = pathinfo($document->getClientOriginalName(), PATHINFO_FILENAME);
                 $documentExtension = $document->getClientOriginalExtension();
                 $documentRandomString = Str::random(15);
@@ -84,10 +84,11 @@ class ReportController extends Controller
     
                 // Buat entri baru di tabel `report_file`
                 ReportFile::create([
-                    'report_id' => $reportId,
+                    'report_id' => $report->id,
                     'name' => $documentPath,
                 ]);
             }
+        }
     
             return response()->json(['success' => 'Pengumpulan berhasil diperbarui'], 200);
         }

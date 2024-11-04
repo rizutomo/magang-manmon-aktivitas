@@ -14,9 +14,9 @@ class Program extends Model
 
     protected $keyType = 'string';
 
-    public function supervisors()
+    public function sectors()
     {
-        return $this->belongsTo(Supervisor::class);
+        return $this->belongsTo(Sectors::class);
     }
     public function tasks()
     {

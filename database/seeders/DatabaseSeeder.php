@@ -57,6 +57,7 @@ class DatabaseSeeder extends Seeder
             'occupation_id' => $occupation1->id,
             'name' => 'User1',
             'email' => 'user1@example.com',
+            'id'=>'b53ad881-14f5-498e-a9cb-9354f9b69ff1'
         ]);
         $user2 = User::factory()->create([
             'occupation_id' => $occupation2->id,
@@ -86,7 +87,7 @@ class DatabaseSeeder extends Seeder
         // Program
         $program1 = Program::create([
             'id' => Str::uuid(),
-            'supervisor_id' => $supervisor1 ->id,
+            'sector_id' => $sector1 ->id,
             'name' => 'Perbaikan CCTV',
             'description' => 'Perbaikan CCTV di kantor Diskominfo Karanganyar',
             'start_date' => '2024-9-1',
@@ -94,7 +95,7 @@ class DatabaseSeeder extends Seeder
         ]);
         $program2 = Program::create([
             'id' => Str::uuid(),
-            'supervisor_id' => $supervisor1 ->id,
+            'sector_id' => $sector1 ->id,
             'name' => 'Perbaikan Router Wi-Fi',
             'description' => 'Perbaikan router Wi-Fi di kantor Diskominfo Karanganyar',
             'start_date' => '2024-9-1',
