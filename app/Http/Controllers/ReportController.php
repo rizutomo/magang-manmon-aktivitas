@@ -96,9 +96,54 @@ class ReportController extends Controller
         
         return response()->json(['error' => 'Pengumpulan gagal'], 404);
     }
+
+    public function delete($report_id)
+    {
+        $user = Auth::user();
+        $report = Report::where('id', $report_id)->where('user_id', $user->id)->first();
+    
+        if ($report) {
+            $task_id = $report->task_id;
+            $existingReport = $user->tasks()->where('task_id', $task_id)->first();
+    
+            if ($existingReport) {
+                // Delete the associated photo if it exists
+                if ($existingReport->pivot->file && Storage::disk('local')->exists($existingReport->pivot->file)) {
+                    Storage::disk('local')->delete($existingReport->pivot->file);
+                }
+    
+                // Empty data in the `reports` table without deleting the entry
+                $user->tasks()->updateExistingPivot($task_id, [
+                    'photo' => null,
+                    'date' => null,
+                    'description' => null,
+                    'latitude' => null,
+                    'longitude' => null,
+                ]);
+    
+                // Delete all document files related to the report in `report_file`
+                $reportFiles = ReportFile::where('report_id', $report->id)->get();
+    
+                foreach ($reportFiles as $reportFile) {
+                    if (Storage::disk('local')->exists($reportFile->name)) {
+                        Storage::disk('local')->delete($reportFile->name);
+                    }
+                    // Delete the report file record
+                    $reportFile->delete();
+                }
+    
+                return response()->json(['success' => 'Data berhasil dihapus'], 200);
+            }
+        }
+    
+        return response()->json(['error' => 'Pengumpulan tidak ditemukan'], 404);
+    }
+    
+
+    }
+
     
 
     
 
    
-}

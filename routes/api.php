@@ -48,5 +48,6 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
     //CRUD Report
     Route::post('report', [ReportController::class, 'submitReport'])->name('report.store');
+    Route::delete('report/{report_id}', [ReportController::class, 'delete'])->name('report.delete');
 
 });
