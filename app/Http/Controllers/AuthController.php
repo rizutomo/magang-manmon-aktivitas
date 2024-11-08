@@ -94,11 +94,12 @@ class AuthController extends Controller
 
     public function getAllUser(Request $request)
     {
-        $users = User::all();
+        $users = User::with('occupation.sector')->get(); 
         return response([
             "message" => "Berhasil ambil data user",
             "users" => $users
         ], 200);
+        
     }
 
     public function sendResetCode(Request $request)

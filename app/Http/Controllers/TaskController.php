@@ -19,7 +19,7 @@ class TaskController extends Controller
     }
     public function indexall()
     {
-        $tasks = Task::all();
+        $tasks = Task::with('users')->get();
         if(!$tasks){
             return response([
                 'message' => 'Kegiatan tidak ditemukan'

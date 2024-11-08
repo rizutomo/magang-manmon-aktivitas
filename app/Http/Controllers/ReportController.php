@@ -20,7 +20,7 @@ class ReportController extends Controller
     }
 
 
-    public function submitReport(Request $request)
+    public function store(Request $request)
     {
         $user_id = Auth::guard('')->user()->id;
         $task_id = $request->input('task_id');
@@ -97,7 +97,7 @@ class ReportController extends Controller
         return response()->json(['error' => 'Pengumpulan gagal'], 404);
     }
 
-    public function delete($report_id)
+    public function destroy($report_id)
     {
         $user = Auth::user();
         $report = Report::where('id', $report_id)->where('user_id', $user->id)->first();

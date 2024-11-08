@@ -62,9 +62,9 @@ class User extends Authenticatable
         return $this->belongsToMany(Task::class, 'reports')->withPivot('photo', 'description', 'longitude', 'latitude', 'date');
     }
 
-    public function occupations()
+    public function occupation()
     {
-        return $this->belongsTo(Occupation::class);
+        return $this->belongsTo(Occupation::class)->with('sector');
     }
 
     // public function sendPasswordResetNotification($token)

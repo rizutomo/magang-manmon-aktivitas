@@ -50,7 +50,7 @@ class ProgramController extends Controller
     }
     public function index()
     {
-        $programs = Program::all();
+        $programs = Program::with('tasks')->get();
         if(!$programs){
             return response([
                 'message' => 'Program tidak ditemukan'
