@@ -13,6 +13,7 @@ Route::post('send-reset-code', [AuthController::class, 'sendResetCode']);
 Route::post('reset-password', [AuthController::class, 'resetPassword']);
 
 Route::get('user', [AuthController::class, 'getAllUser'])->middleware('auth:sanctum');
+Route::get('user/count', [AuthController::class, 'getUserCount'])->middleware('auth:sanctum');
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('register', [AuthController::class, 'register']);
@@ -20,6 +21,10 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('validate-token', [AuthController::class, 'validateToken']);
 
     //CRUD Program
+    Route::get('program/count', [ProgramController::class, 'getProgramCount'])->name('program.count');
+    Route::get('program/ended/count', [ProgramController::class, 'getProgramEndedCount'])->name('program.endedCount');
+    Route::get('program/upcoming', [ProgramController::class, 'upcomingPrograms'])->name('program.upcoming');
+    Route::get('program/in-progress/count', [ProgramController::class, 'getProgramInProgressCount'])->name('program.inProgressCount');
     Route::get('program', [ProgramController::class, 'index'])->name('program.index');
     Route::get('programProgress', [ProgramController::class, 'programWithProgress'])->name('program.index');
     Route::get('program/{id}', [ProgramController::class, 'show'])->name('program.show');
@@ -32,6 +37,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     //CRUD Task
     Route::get('program-{program_id}/task', [TaskController::class, 'index'])->name('task.index');
     Route::get('user/task', [TaskController::class, 'getByUserId'])->name('task.getByUserId');
+    Route::get('task/upcoming', [TaskController::class, 'upcomingTasks'])->name('task.upcoming');
     Route::get('task/{id}', [TaskController::class, 'show'])->name('task.show');
     Route::post('task', [TaskController::class, 'store'])->name('task.store');
     Route::post('task/{id}/attachTeam', [TaskController::class, 'attachTeam'])->name('task.attachTeam');

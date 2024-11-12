@@ -7,6 +7,7 @@ use App\Models\Program;
 use Illuminate\Support\Facades\Validator;
 use App\Enums\ReportStatus;
 use Response;
+use Carbon\Carbon;
 
 
 class ProgramController extends Controller
@@ -60,6 +61,12 @@ class ProgramController extends Controller
         return response([
             'programs' =>$programs
         ], 200);
+    }
+
+    public function getProgramCount()
+    {
+        $count = Program::count(); 
+        return response()->json(['count' => $count]);
     }
     public function getByUserId(Request $request)
     {
@@ -171,5 +178,35 @@ class ProgramController extends Controller
         return response([
             'message' => 'Program berhasil dihapus'
         ], 204);
+    }
+    public function getProgramInProgressCount()
+    {
+        $count = Program::where('end_date', '>', Carbon::now())->count();
+
+        return response()->json(['count' => $count]);
+    }
+        public function getProgramEndedCount()
+    {
+        $count = Program::where('end_date', '<', Carbon::now())->count();
+
+        return response()->json(['count' => $count]);
+    }
+    public function upcomingPrograms()
+    {
+        $today = Carbon::today();
+        $programs = Program::with('tasks') 
+            ->where('end_date', '>=', $today)
+            ->orderBy('start_date', 'asc')
+            ->get();
+
+        if ($programs->isEmpty()) {
+            return response()->json([
+                'message' => 'Program tidak ditemukan'
+            ], 404);
+        }
+
+        return response()->json([
+            'programs' => $programs
+        ], 200);
     }
 }

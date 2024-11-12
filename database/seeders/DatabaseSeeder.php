@@ -101,6 +101,15 @@ class DatabaseSeeder extends Seeder
             'start_date' => '2024-9-1',
             'end_date' => '2024-9-15',
         ]);
+
+        $program3 = Program::create([
+            'id' => Str::uuid(),
+            'sector_id' => $sector1 ->id,
+            'name' => 'Perbaikan Kabel Ethernet',
+            'description' => 'Perbaikan kabel ethernet di kantor Diskominfo Karanganyar',
+            'start_date' => '2024-9-1',
+            'end_date' => '2024-12-22',
+        ]);
         
         // TEAM
         $user1->programs()->attach($program1->id, ['role' => 'koordinator']);
@@ -129,6 +138,17 @@ class DatabaseSeeder extends Seeder
             'location' => 'Karanganyar',
             'time' => '08:30:00',
             'description' => 'Memperbaiki CCTV di lantai 2',
+            'file' => 'task_file.pdf',
+        ]);
+        $task3 = Task::create([
+            'program_id' => $program1->id,
+            'id' => Str::uuid(),
+            'name' => 'Perbaikan CCTV Gedung C',
+            'host' => 'Diskominfo Karanganyar',
+            'date' => '2024-12-20',
+            'location' => 'Karanganyar',
+            'time' => '08:30:00',
+            'description' => 'Memperbaiki CCTV di lantai 2 lagi',
             'file' => 'task_file.pdf',
         ]);
 

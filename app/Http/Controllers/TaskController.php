@@ -7,6 +7,7 @@ use App\Models\Task;
 use App\Models\User;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use Carbon\Carbon;
 
 class TaskController extends Controller
 {
@@ -197,5 +198,23 @@ class TaskController extends Controller
             'message' => 'Berhasil menghapus anggota tim dari kegiatan'
         ], 204);
         ;
+    }
+        public function upcomingTasks()
+    {
+        $today = Carbon::today();
+        $tasks = Task::with('users') 
+        ->where('date', '>=', $today)
+        ->orderBy('date', 'asc')
+        ->get();
+
+        if ($tasks->isEmpty()) {
+            return response()->json([
+                'message' => 'task tidak ditemukan'
+            ], 404);
+        }
+
+        return response()->json([
+            'tasks' => $tasks
+        ], 200);
     }
 }

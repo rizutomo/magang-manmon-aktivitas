@@ -101,6 +101,11 @@ class AuthController extends Controller
         ], 200);
         
     }
+    public function getUserCount()
+    {
+        $count = User::count(); 
+        return response()->json(['count' => $count]);
+    }
 
     public function sendResetCode(Request $request)
     {
