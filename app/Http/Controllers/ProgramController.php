@@ -51,7 +51,7 @@ class ProgramController extends Controller
     }
     public function index()
     {
-        $programs = Program::with('tasks')->get();
+        $programs = Program::with('tasks','users')->get();
         if(!$programs){
             return response([
                 'message' => 'Program tidak ditemukan'
@@ -115,15 +115,16 @@ class ProgramController extends Controller
 
     public function show(string $id)
     {
-        $program = Program::find($id);
-        if(!$program){
+        $program = Program::with(['tasks.users', 'users'])->find($id);
+
+        if (!$program) {
             return response([
                 'message' => 'Program tidak ditemukan'
             ], 404);
         }
-
+    
         return response([
-            'program' => $program,
+            'program' => $program
         ], 200);
     }
 

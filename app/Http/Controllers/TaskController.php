@@ -96,17 +96,28 @@ class TaskController extends Controller
     }
 
     public function show(string $id)
-    {
-        $task = Task::find($id);
-        if(!$task){
-            return response([
-                'message' => 'Kegiatan tidak ditemukan'
-            ], 404);
+{
+    $task = Task::with([
+        'users',
+        'programs.users' => function ($query) {
+            $query->withPivot('role');
         }
+    ])->find($id);
+
+    if (!$task) {
         return response([
-            'task' => $task,
-        ], 200);
+            'message' => 'Kegiatan tidak ditemukan'
+        ], 404);
     }
+
+    return response([
+        'task' => $task,
+        'task_users' => $task->users,
+        'program_users' => $task->programs->users ?? [] 
+    ], 200);
+}
+
+    
 
     public function update(Request $request, string $id)
     {
