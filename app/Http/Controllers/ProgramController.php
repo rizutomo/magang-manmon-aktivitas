@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Sector;
 use Illuminate\Http\Request;
 use App\Models\Program;
 use Illuminate\Support\Facades\Validator;
@@ -14,7 +15,7 @@ class ProgramController extends Controller
 {
     public function programWithProgress()
     {
-        $programs = Program::with(['tasks.users' => function ($query) {
+        $programs = Program::with(['sector', 'tasks.users' => function ($query) {
             $query->withPivot('status');
         }])->get();
 
@@ -31,11 +32,12 @@ class ProgramController extends Controller
 
             $coordinator = $program->users->filter(function ($user) {
                 return $user->pivot->role === 'koordinator';
-            })->pluck('name')->first();
+            })->first();
 
             return [
                 'id' => $program->id,
                 'name' => $program->name,
+                'sector' => $program->sector,
                 'start_date' => $program->start_date,
                 'end_date' => $program->end_date,
                 'total_tasks' => $totalTasks,
@@ -49,6 +51,17 @@ class ProgramController extends Controller
             'programs' => $programsData
         ], 200);
     }
+
+    public function getSector()
+    {
+        $sectors = Sector::with('supervisors')->get();
+        // dd($sectors);
+
+        return response([
+            'sectors' => $sectors
+        ], 200);
+    }
+    
     public function index()
     {
         $programs = Program::with('tasks','users')->get();
@@ -77,6 +90,15 @@ class ProgramController extends Controller
         return response([
             'programs' => $programs,
             'total' => $totalProgram
+        ], 200);
+    }
+    
+    public function getTotalbyUser(Request $request)
+    {
+        $totalProgram = $request->user()->programs()->count();
+        
+        return response([
+            'countProgram' => $totalProgram
         ], 200);
     }
 
@@ -115,7 +137,7 @@ class ProgramController extends Controller
 
     public function show(string $id)
     {
-        $program = Program::with(['tasks.users', 'users'])->find($id);
+        $program = Program::with(['tasks.users', 'users', 'sector'])->find($id);
 
         if (!$program) {
             return response([

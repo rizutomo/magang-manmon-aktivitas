@@ -11,6 +11,14 @@ use Carbon\Carbon;
 
 class TaskController extends Controller
 {
+    public function coba()
+    {
+        $tasks = Task::with('programs')->get();
+        return response([
+            'tasks' => $tasks,
+        ], 200);
+    }
+
     public function index($program_id)
     {
         $tasks = Task::where('program_id', $program_id)->get();
@@ -52,6 +60,15 @@ class TaskController extends Controller
         return response([
             'tasks' => $tasks,
             'total' => $totalTask
+        ], 200);
+    }
+
+    public function getTotalbyUser(Request $request)
+    {
+        $totalTasks = $request->user()->tasks()->count();
+        
+        return response([
+            'countTask' => $totalTasks
         ], 200);
     }
 

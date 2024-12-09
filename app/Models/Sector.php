@@ -12,7 +12,19 @@ class Sector extends Model
     protected $keyType = 'string';
     public function supervisors()
     {
-        return $this->hasMany(Supervisor::class);
+        return $this->hasOne(Supervisor::class);
+    }
+    public function programs()
+    {
+        return $this->hasMany(Program::class);
+    }
+    public function occupations()
+    {
+        return $this->hasMany(Occupation::class);
+    }
+    public function users()
+    {
+        return $this->hasManyThrough(User::class,Occupation::class);
     }
     
     protected static function boot()

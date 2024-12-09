@@ -51,11 +51,11 @@ class Supervisor extends Model
         ];
     }
 
-    public function programs()
+    public function program()
     {
-        return $this->hasMany(Program::class);
+        return $this->belongsTo(Program::class);
     }
-    public function sectors()
+    public function sector()
     {
         return $this->belongsTo(Program::class);
     }

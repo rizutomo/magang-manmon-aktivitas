@@ -19,7 +19,7 @@ class Task extends Model
         return $this->belongsToMany(User::class, 'reports')->withPivot('photo', 'description', 'longitude', 'latitude', 'date');
     }
 
-    public function programs()
+    public function program()
     {
         return $this->belongsTo(Program::class);
     }
