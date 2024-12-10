@@ -116,7 +116,7 @@ class TaskController extends Controller
 {
     $task = Task::with([
         'users',
-        'programs.users' => function ($query) {
+        'program.users' => function ($query) {
             $query->withPivot('role');
         }
     ])->find($id);
@@ -130,7 +130,7 @@ class TaskController extends Controller
     return response([
         'task' => $task,
         'task_users' => $task->users,
-        'program_users' => $task->programs->users ?? [] 
+        'program_users' => $task->program->users ?? [] 
     ], 200);
 }
 
