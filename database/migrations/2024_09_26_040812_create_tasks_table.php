@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('location');
             $table->time('time');
             $table->string('description');
-            $table->string('file');
+            $table->string('file')->nullable();
             $table->timestamps();
 
             $table->foreign('program_id')->references('id')->on('programs')->onDelete('cascade');

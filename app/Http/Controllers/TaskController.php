@@ -79,11 +79,10 @@ class TaskController extends Controller
             'name' => 'required|string',
             'host' => 'required|string',
             'date' => 'required|date',
-            'time' => 'required|time',
+            'time' => 'required|date_format:H:i',
             'description' => 'required|string',
-            'file' => 'required|mimes:pdf,doc,docx,jpg,png',
+            'file' => 'mimes:pdf,doc,docx,jpg,png',
         ], [
-            'file.required' => 'Harap tambahkan file tugas anda',
             'file.mimes' => 'Tipe file tidak valid',
         ]);
         
@@ -143,11 +142,10 @@ class TaskController extends Controller
             'name' => 'required|string',
             'host' => 'required|string',
             'date' => 'required|date',
-            'time' => 'required|time',
+            'time' => 'required|date:H:i',
             'description' => 'required|string',
-            'file' => 'required|mimes:pdf,doc,docx,jpg,png',
+            'file' => 'mimes:pdf,doc,docx,jpg,png',
         ], [
-            'file.required' => 'Harap tambahkan file tugas anda',
             'file.mimes' => 'Tipe file tidak valid',
         ]);
         

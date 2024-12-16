@@ -148,6 +148,15 @@ class ProgramController extends Controller
         return response([
             'program' => $program
         ], 200);
+        return response([
+            'program' => $program,
+            'anggota' => $program->users->map(function ($user) {
+                return [
+                    'users' => $user->name,
+                    'value' => $user->id,
+                ];
+            })
+        ], 200);
     }
 
     /**
