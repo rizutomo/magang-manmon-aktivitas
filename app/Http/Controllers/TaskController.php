@@ -29,14 +29,14 @@ class TaskController extends Controller
     public function indexall()
     {
         $tasks = Task::with('users')->get();
-        if(!$tasks){
+        if (!$tasks) {
             return response([
                 'message' => 'Kegiatan tidak ditemukan'
             ], 404);
         }
 
         return response([
-            'tasks' =>$tasks
+            'tasks' => $tasks
         ], 200);
     }
 
@@ -63,10 +63,16 @@ class TaskController extends Controller
         ], 200);
     }
 
+    public function getTaskCount()
+    {
+        $count = Task::count();
+        return response()->json(['count' => $count]);
+    }
+
     public function getTotalbyUser(Request $request)
     {
         $totalTasks = $request->user()->tasks()->count();
-        
+
         return response([
             'countTask' => $totalTasks
         ], 200);
@@ -85,7 +91,7 @@ class TaskController extends Controller
         ], [
             'file.mimes' => 'Tipe file tidak valid',
         ]);
-        
+
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
@@ -112,28 +118,29 @@ class TaskController extends Controller
     }
 
     public function show(string $id)
-{
-    $task = Task::with([
-        'users',
-        'program.users' => function ($query) {
-            $query->withPivot('role');
-        }
-    ])->find($id);
+    {
+        // $task = Task::with([
+        //     'users',
+        //     'program.users' => function ($query) {
+        //         $query->withPivot('role');
+        //     }
+        // ])->find($id);
+        $task = Task::find($id);
 
-    if (!$task) {
+        if (!$task) {
+            return response([
+                'message' => 'Kegiatan tidak ditemukan'
+            ], 404);
+        }
+
         return response([
-            'message' => 'Kegiatan tidak ditemukan'
-        ], 404);
+            'task' => $task,
+            // 'task_users' => $task->users,
+            // 'program_users' => $task->program->users ?? []
+        ], 200);
     }
 
-    return response([
-        'task' => $task,
-        'task_users' => $task->users,
-        'program_users' => $task->program->users ?? [] 
-    ], 200);
-}
 
-    
 
     public function update(Request $request, string $id)
     {
@@ -142,13 +149,13 @@ class TaskController extends Controller
             'name' => 'required|string',
             'host' => 'required|string',
             'date' => 'required|date',
-            'time' => 'required|date:H:i',
+            'time' => 'required|date_format:H:i',
             'description' => 'required|string',
-            'file' => 'mimes:pdf,doc,docx,jpg,png',
+            'file' => 'nullable|file|mimes:pdf,doc,docx,jpg,png',
         ], [
             'file.mimes' => 'Tipe file tidak valid',
         ]);
-        
+
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
@@ -158,7 +165,7 @@ class TaskController extends Controller
         }
 
         $task = Task::find($id);
-        if(!$task){
+        if (!$task) {
             return response([
                 'message' => 'Kegiatan tidak ditemukan'
             ], 404);
@@ -182,7 +189,7 @@ class TaskController extends Controller
     public function destroy(string $id)
     {
         $task = Task::find($id);
-        if(!$task){
+        if (!$task) {
             return response([
                 'message' => 'Kegiatan tidak ditemukan'
             ], 404);
@@ -197,23 +204,24 @@ class TaskController extends Controller
     {
         // $task = Task::find($id);
         $user = User::find($request->user_id);
-        if(!$user){
+        if (!$user) {
             return response([
                 'message' => 'User tidak ditemukan'
             ], 404);
-        };
-        $user->tasks()->attach($id,['id' => Str::uuid()]);
-        
+        }
+        ;
+        $user->tasks()->attach($id, ['id' => Str::uuid()]);
+
         return response([
             'message' => 'Berhasil menambahkan anggota tim ke dalam kegiatan'
         ], 200);
     }
-    
+
     public function detachTeam(Request $request, $id)
     {
         // $task = Task::find($id);
         $user = User::find($request->user_id);
-        if(!$user){
+        if (!$user) {
             return response([
                 'message' => 'User tidak ditemukan'
             ], 404);
@@ -225,13 +233,13 @@ class TaskController extends Controller
         ], 204);
         ;
     }
-        public function upcomingTasks()
+    public function upcomingTasks()
     {
         $today = Carbon::today();
-        $tasks = Task::with('users') 
-        ->where('date', '>=', $today)
-        ->orderBy('date', 'asc')
-        ->get();
+        $tasks = Task::with('users')
+            ->where('date', '>=', $today)
+            ->orderBy('date', 'asc')
+            ->get();
 
         if ($tasks->isEmpty()) {
             return response()->json([

@@ -12,7 +12,7 @@ class TeamController extends Controller
     public function show($program_id)
     {
         $program = Program::find($program_id);
-        if(!$program) {
+        if (!$program) {
             return response([
                 'message' => 'Program tidak ditemukan',
             ], 200);
@@ -48,26 +48,26 @@ class TeamController extends Controller
             'message' => 'Berhasil menambahkan anggota tim',
         ], 200);
     }
-    
+
     public function storeMany(Request $request, string $program_id)
     {
-        if (count($request->id) !== count($request->role)) {
-            return response([
-                'message' => 'Jumlah user dan role harus sama.',
-            ], 400);
-        }
+        // if (count($request->id) !== count($request->role)) {
+        //     return response([
+        //         'message' => 'Jumlah user dan role harus sama.',
+        //     ], 400);
+        // }
 
         foreach ($request->id as $index => $user_id) {
-        $user = User::find($request->id);
-        $role = $request->role;
+            $user = User::find($user_id);
+            $role = 'anggota';
 
-        if ($user) {
-            $user->programs()->attach($program_id, ['role' => $role]);
-        } else {
-            return response([
-                'message' => "User dengan ID {$request->id} tidak ditemukan.",
-            ], 404);
-        }
+            if ($user) {
+                $user->programs()->attach($program_id, ['role' => $role]);
+            } else {
+                return response([
+                    'message' => "User dengan ID {$request->id} tidak ditemukan.",
+                ], 404);
+            }
         }
 
         return response([
@@ -75,11 +75,39 @@ class TeamController extends Controller
         ], 200);
     }
 
+    public function storeMany2(Request $request, string $program_id)
+    {
+        // Validasi jumlah user dan role
+        // if (count($request->id) !== count($request->role)) {
+        //     return response([
+        //         'message' => 'Jumlah user dan role harus sama.',
+        //     ], 400);
+        // }
+
+        $dataToSync = [];
+        foreach ($request->id as $index => $user_id) {
+            $dataToSync[$user_id] = ['role' => $request->role[$index]];
+        }
+
+        $program = Program::find($program_id);
+        if ($program) {
+            $program->users()->syncWithoutDetaching($dataToSync);
+
+            return response([
+                'message' => 'Berhasil menambahkan anggota tim.',
+            ], 200);
+        }
+
+        return response([
+            'message' => "Program dengan ID {$program_id} tidak ditemukan.",
+        ], 404);
+    }
+
 
     public function update(Request $request, $program_id)
     {
         $user = Team::where('user_id', $request->user_id)->where('program_id', $program_id)->first();
-        if(!$user){
+        if (!$user) {
             return response([
                 'message' => 'Anggota tim tidak ditemukan'
             ], 404);
@@ -94,7 +122,7 @@ class TeamController extends Controller
     public function destroy(Request $request, $program_id)
     {
         $user = User::find($request->user_id);
-        if(!$user){
+        if (!$user) {
             return response([
                 'message' => 'Anggota tim tidak ditemukan'
             ], 404);
