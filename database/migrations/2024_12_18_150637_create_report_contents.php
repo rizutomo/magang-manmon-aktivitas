@@ -11,10 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('report_files', function (Blueprint $table) {
+        Schema::create('report_contents', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('report_id');
-            $table->string('name');
+            $table->string('photo')->nullable();
+            $table->string('description')->nullable();
+            $table->string('longitude')->nullable();
+            $table->string('latitude')->nullable();
+            $table->date('date')->nullable();
+            // $table->string('status')->nullable();
             $table->timestamps();
 
             $table->foreign('report_id')->references('id')->on('reports')->onDelete('cascade');
@@ -26,6 +31,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('report_files');
+        Schema::dropIfExists('report_contents');
     }
 };
+
