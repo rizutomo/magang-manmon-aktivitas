@@ -25,13 +25,7 @@ class TeamController extends Controller
 
     public function store(Request $request, string $program_id)
     {
-        // if (count($request->id) !== count($request->role)) {
-        //     return response([
-        //         'message' => 'Jumlah user dan role harus sama.',
-        //     ], 400);
-        // }
 
-        // foreach ($request->id as $index => $user_id) {
         $user = User::find($request->id);
         $role = $request->role;
 
@@ -51,11 +45,6 @@ class TeamController extends Controller
 
     public function storeMany(Request $request, string $program_id)
     {
-        // if (count($request->id) !== count($request->role)) {
-        //     return response([
-        //         'message' => 'Jumlah user dan role harus sama.',
-        //     ], 400);
-        // }
 
         foreach ($request->id as $index => $user_id) {
             $user = User::find($user_id);
@@ -77,12 +66,6 @@ class TeamController extends Controller
 
     public function storeMany2(Request $request, string $program_id)
     {
-        // Validasi jumlah user dan role
-        // if (count($request->id) !== count($request->role)) {
-        //     return response([
-        //         'message' => 'Jumlah user dan role harus sama.',
-        //     ], 400);
-        // }
 
         $dataToSync = [];
         foreach ($request->id as $index => $user_id) {

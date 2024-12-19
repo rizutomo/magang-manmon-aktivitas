@@ -60,26 +60,37 @@ class AuthController extends Controller
             'user' => $newUser,
         ], 200);
     }
+
     public function login(Request $request)
-    {
-        $request->validate([
-            'email' => 'email|required',
-            'password' => 'required'
-        ]);
-        $user = User::whereEmail($request->email)->first();
-        if (!$user || !Hash::check($request->password, $user->password)) {
+{
+    $request->validate([
+        'email' => 'email|required',
+        'password' => 'required'
+    ]);
+
+   
+    $models = ['User', 'Admin', 'Supervisor'];
+
+    foreach ($models as $model) {
+        $modelClass = "App\\Models\\{$model}";
+        $user = $modelClass::whereEmail($request->email)->first();
+
+        if ($user && Hash::check($request->password, $user->password)) {
+            $token = $user->createToken('APIToken')->plainTextToken;
+
             return response([
-                'message' => 'Invalid credentials'
-            ], 422);
+                'user' => $user,
+                'role' => strtolower($model),
+                'token' => $token
+            ], 200);
         }
-
-        $token = $user->createToken('APIToken')->plainTextToken;
-
-        return response([
-            'user' => $user,
-            'token' => $token
-        ], 200);
     }
+
+    return response([
+        'message' => 'Invalid credentials'
+    ], 422);
+}
+
 
     public function logout(Request $request)
     {
