@@ -62,34 +62,39 @@ class AuthController extends Controller
     }
 
     public function login(Request $request)
-{
-    $request->validate([
-        'email' => 'email|required',
-        'password' => 'required'
-    ]);
+    {
+        $request->validate([
+            'email' => 'email|required',
+            'password' => 'required'
+        ]);
 
-   
-    $models = ['User', 'Admin', 'Supervisor'];
 
-    foreach ($models as $model) {
-        $modelClass = "App\\Models\\{$model}";
-        $user = $modelClass::whereEmail($request->email)->first();
+        $models = ['User', 'Admin', 'Supervisor'];
 
-        if ($user && Hash::check($request->password, $user->password)) {
-            $token = $user->createToken('APIToken')->plainTextToken;
+        foreach ($models as $model) {
+            $modelClass = "App\\Models\\{$model}";
+            $user = $modelClass::whereEmail($request->email)
+                ->with($model === 'Supervisor' ? 'sector' : ($model === 'User' ? 'occupation' : []))
+                ->first();
 
-            return response([
-                'user' => $user,
-                'role' => strtolower($model),
-                'token' => $token
-            ], 200);
+            if ($user && Hash::check($request->password, $user->password)) {
+                $token = $user->createToken('APIToken')->plainTextToken;
+
+                $occupation = $model === 'Supervisor' ? $user->sector?->name : ($model === 'User' ? $user->occupation?->name : null);
+
+                return response([
+                    'user' => $user->name,
+                    'guard' => strtolower($model),
+                    'occupation' => $occupation,
+                    'token' => $token
+                ], 200);
+            }
         }
-    }
 
-    return response([
-        'message' => 'Invalid credentials'
-    ], 422);
-}
+        return response([
+            'message' => 'Invalid credentials'
+        ], 422);
+    }
 
 
     public function logout(Request $request)
@@ -105,16 +110,16 @@ class AuthController extends Controller
 
     public function getAllUser(Request $request)
     {
-        $users = User::with('occupation.sector')->get(); 
+        $users = User::with('occupation.sector')->get();
         return response([
             "message" => "Berhasil ambil data user",
             "users" => $users
         ], 200);
-        
+
     }
     public function getUserCount()
     {
-        $count = User::count(); 
+        $count = User::count();
         return response()->json(['count' => $count]);
     }
 

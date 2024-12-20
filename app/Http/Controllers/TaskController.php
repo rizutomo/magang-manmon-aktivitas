@@ -7,6 +7,7 @@ use App\Models\Task;
 use App\Models\User;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use Ramsey\Uuid\Uuid;
 use Carbon\Carbon;
 
 class TaskController extends Controller
@@ -202,18 +203,38 @@ class TaskController extends Controller
 
     public function attachTeam(Request $request, $id)
     {
-        // $task = Task::find($id);
-        $user = User::find($request->user_id);
-        if (!$user) {
-            return response([
-                'message' => 'User tidak ditemukan'
-            ], 404);
+        // // $task = Task::find($id);
+        // $user = User::find($request->user_id);
+        // if (!$user) {
+        //     return response([
+        //         'message' => 'User tidak ditemukan'
+        //     ], 404);
+        // };
+
+        foreach ($request->id as $index => $user_id) {
+            $user = User::find($user_id);
+            // $role = 'anggota';
+
+            if ($user) {
+                $user->tasks()->attach($id, ['id' => Str::uuid()]);
+            } else {
+                return response([
+                    'message' => "User dengan ID {$request->id} tidak ditemukan.",
+                ], 404);
+            }
         }
-        ;
-        $user->tasks()->attach($id, ['id' => Str::uuid()]);
+
+        // if ($user) {
+        //     $user->tasks()->attach($id, ['id' => Str::uuid()]);
+        // } else {
+        //     return response([
+        //         'message' => "User dengan ID {$request->id} tidak ditemukan.",
+        //     ], 404);
+        // }
 
         return response([
-            'message' => 'Berhasil menambahkan anggota tim ke dalam kegiatan'
+            'message' => 'Berhasil menambahkan anggota tim ke dalam kegiatan',
+            'name' => $user->name
         ], 200);
     }
 
@@ -233,6 +254,24 @@ class TaskController extends Controller
         ], 204);
         ;
     }
+
+    public function getTaskTeam(Request $request, $id)
+    {
+        // $task = Task::find($id);
+        $user = User::find($request->user_id);
+        if (!$user) {
+            return response([
+                'message' => 'User tidak ditemukan'
+            ], 404);
+        }
+        $user->tasks()->detach($id);
+
+        return response([
+            'message' => 'Berhasil menghapus anggota tim dari kegiatan'
+        ], 204);
+        ;
+    }
+
     public function upcomingTasks()
     {
         $today = Carbon::today();

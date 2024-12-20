@@ -17,7 +17,7 @@ class TeamController extends Controller
                 'message' => 'Program tidak ditemukan',
             ], 200);
         }
-        $teamMember = $program->users;
+        $teamMember = $program->users()->with('occupation')->get();
         return response([
             'team' => $teamMember,
         ], 200);

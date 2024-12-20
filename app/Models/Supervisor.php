@@ -51,13 +51,13 @@ class Supervisor extends Model
         ];
     }
 
-    public function program()
+    public function programs()
     {
         return $this->belongsTo(Program::class);
     }
     public function sector()
     {
-        return $this->belongsTo(Program::class);
+        return $this->belongsTo(Sector::class);
     }
 
     public function sendPasswordResetNotification($token)
