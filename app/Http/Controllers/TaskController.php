@@ -119,12 +119,12 @@ class TaskController extends Controller
 
     public function show(string $id)
     {
-        // $task = Task::with([
-        //     'users',
-        //     'program.users' => function ($query) {
-        //         $query->withPivot('role');
-        //     }
-        // ])->find($id);
+        $task = Task::with([
+            'users',
+            'program.users' => function ($query) {
+                $query->withPivot('role');
+            }
+        ])->find($id);
         $task = Task::find($id);
 
         if (!$task) {
@@ -135,8 +135,8 @@ class TaskController extends Controller
 
         return response([
             'task' => $task,
-            // 'task_users' => $task->users,
-            // 'program_users' => $task->program->users ?? []
+            'task_users' => $task->users,
+            'program_users' => $task->program->users ?? []
         ], 200);
     }
 

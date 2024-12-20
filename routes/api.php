@@ -33,7 +33,7 @@ Route::middleware('auth:admin')->group(function (){
     Route::delete('task/{id}', [TaskController::class, 'destroy'])->name('task.destroy');
     Route::get('sector', [ProgramController::class, 'getSector'])->name('sector.get');
 
-    Route::middleware('auth:supervisor')->group(function (){
+    Route::middleware('auth:admin,supervisor')->group(function (){
         //SUPERVISOR
         Route::get('getUsersBySector/{id}/', [SectorController::class, 'getUsersBySector'])->name('sector.getUsersBySector');
         Route::get('program/{program_id}/team', [TeamController::class, 'show'])->name('team.show');
@@ -45,7 +45,7 @@ Route::middleware('auth:admin')->group(function (){
         Route::delete('task/{id}/detachTeam', [TaskController::class, 'detachTeam'])->name('task.detachTeam');
         Route::get('task', [TaskController::class, 'indexall'])->name('task.indexall');
         
-        Route::middleware('auth:user')->group(function (){
+        Route::middleware('auth:admin,supervisor,user')->group(function (){
              //USER
             Route::get('user/program/', [ProgramController::class, 'getByUserId'])->name('program.getByUserId');
             Route::get('count/program', [ProgramController::class, 'getTotalByUser'])->name('program.getTotalByUser');
