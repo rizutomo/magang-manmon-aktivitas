@@ -16,7 +16,7 @@ class Task extends Model
 
     public function users()
     {
-        return $this->belongsToMany(User::class, 'reports')->withPivot('photo', 'description', 'longitude', 'latitude', 'date');
+        return $this->belongsToMany(User::class, 'reports')->withPivot('photo', 'description', 'longitude', 'latitude', 'date', 'status');
     }
 
     public function program()

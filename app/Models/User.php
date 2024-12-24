@@ -8,15 +8,18 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Ramsey\Uuid\Uuid;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\Permission\Traits\HasRoles;
 // use App\Notifications\ResetPasswordNotification as resetpwnotif;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, HasRoles;
 
     public $incrementing = false;
 
     protected $keyType = 'string';
+
+    
 
     /**
      * The attributes that are mass assignable.
@@ -57,9 +60,14 @@ class User extends Authenticatable
         return $this->belongsToMany(Program::class, 'teams')->withPivot('role');
     }
 
+    public function sector()
+    {
+        return $this->belongsTo(Sector::class);
+    }
+
     public function tasks()
     {
-        return $this->belongsToMany(Task::class, 'reports')->withPivot('photo', 'description', 'longitude', 'latitude', 'date');
+        return $this->belongsToMany(Task::class, 'reports')->withPivot('photo', 'description', 'longitude', 'latitude', 'date', 'status');
     }
 
     public function occupation()

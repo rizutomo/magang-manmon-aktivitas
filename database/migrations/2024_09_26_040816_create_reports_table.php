@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('longitude')->nullable();
             $table->string('latitude')->nullable();
             $table->date('date')->nullable();
-            // $table->string('status')->nullable();
+            $table->enum('status', ['Belum Diserahkan', 'Diserahkan', 'Diterima', 'Pending'])->default('Belum Diserahkan');
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');

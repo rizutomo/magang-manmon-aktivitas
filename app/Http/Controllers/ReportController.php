@@ -33,9 +33,7 @@ class ReportController extends Controller
             $role = $program->users()->where('users.id', $user->id)->first()->pivot->role ?? null;
 
             return [
-                'id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email,
+                'user' => $user,
                 'role' => $role,
             ];
         });

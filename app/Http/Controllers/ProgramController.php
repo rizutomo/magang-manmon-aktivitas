@@ -57,7 +57,7 @@ class ProgramController extends Controller
 
     public function getSector()
     {
-        $sectors = Sector::with('supervisors')->get();
+        $sectors = Sector::with('user')->get();
         // dd($sectors);
 
         return response([
@@ -87,7 +87,7 @@ class ProgramController extends Controller
     public function getByUserId(Request $request)
     {
         $user = auth()->user();
-        dd($user);
+        // dd($user);
         $programs = $user->programs()->with([
             'sector',
             'tasks.users' => function ($query) {

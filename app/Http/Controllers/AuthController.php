@@ -68,31 +68,35 @@ class AuthController extends Controller
             'password' => 'required'
         ]);
 
+        $user = User::whereEmail($request->email)
+            ->first();
+            // dd($user);
 
-        $models = ['User', 'Admin', 'Supervisor'];
+        if (!$user) {
+            return response([
+                'message' => 'Email atau password tidak sesuai',
+            ], 404);
+        }
 
-        foreach ($models as $model) {
-            $modelClass = "App\\Models\\{$model}";
-            $user = $modelClass::whereEmail($request->email)
-                ->with($model === 'Supervisor' ? 'sector' : ($model === 'User' ? 'occupation' : []))
-                ->first();
+        $role = $user->getRoleNames();
 
-            if ($user && Hash::check($request->password, $user->password)) {
-                $token = $user->createToken('APIToken')->plainTextToken;
+        if ($user && Hash::check($request->password, $user->password)) {
+            $token = $user->createToken('APIToken')->plainTextToken;
 
-                $occupation = $model === 'Supervisor' ? $user->sector?->name : ($model === 'User' ? $user->occupation?->name : null);
+            $occupation = $user->occupation;
 
-                return response([
-                    'user' => $user->name,
-                    'guard' => strtolower($model),
-                    'occupation' => $occupation,
-                    'token' => $token
-                ], 200);
-            }
+
+            return response([
+                'user' => $user->name,
+                'email' => $user->email,
+                'guard' => $role[0],
+                'occupation' => $occupation->name,
+                'token' => $token
+            ], 200);
         }
 
         return response([
-            'message' => 'Invalid credentials'
+            'message' => 'Email atau password tidak sesuai'
         ], 422);
     }
 

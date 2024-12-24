@@ -14,7 +14,7 @@ return [
     */
 
     'defaults' => [
-        'guard' => env('AUTH_GUARD', 'web'),
+        'guard' => env('AUTH_GUARD', 'api'),
         'passwords' => env('AUTH_PASSWORD_BROKER', 'users'),
     ],
 
@@ -46,20 +46,20 @@ return [
 
         ],
 
-        'admin' => [
-            'driver' => 'sanctum',
-            'provider' => 'admins',
-        ],
+        // 'admin' => [
+        //     'driver' => 'sanctum',
+        //     'provider' => 'admins',
+        // ],
 
-        'supervisor' => [
-            'driver' => 'sanctum',
-            'provider' => 'supervisors',
-        ],
+        // 'supervisor' => [
+        //     'driver' => 'sanctum',
+        //     'provider' => 'supervisors',
+        // ],
 
-        'user' => [
-            'driver' => 'sanctum',
-            'provider' => 'users',
-        ],
+        // 'user' => [
+        //     'driver' => 'sanctum',
+        //     'provider' => 'users',
+        // ],
     ],
 
     /*
@@ -84,14 +84,14 @@ return [
             'driver' => 'eloquent',
             'model' => env('AUTH_MODEL', App\Models\User::class),
         ],
-        'admins' => [
-            'driver' => 'eloquent',
-            'model' => env('AUTH_MODEL', App\Models\Admin::class),
-        ],
-        'supervisors' => [
-            'driver' => 'eloquent',
-            'model' => env('AUTH_MODEL', App\Models\Supervisor::class),
-        ],
+        // 'admins' => [
+        //     'driver' => 'eloquent',
+        //     'model' => env('AUTH_MODEL', App\Models\Admin::class),
+        // ],
+        // 'supervisors' => [
+        //     'driver' => 'eloquent',
+        //     'model' => env('AUTH_MODEL', App\Models\Supervisor::class),
+        // ],
 
 
         // 'users' => [

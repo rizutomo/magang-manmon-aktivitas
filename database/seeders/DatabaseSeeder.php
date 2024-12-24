@@ -43,12 +43,17 @@ class DatabaseSeeder extends Seeder
         ]);
         $occupation3 = Occupation::create([
             'id' => Str::uuid(),
-            'name' => 'Pengendali Jaringan Komunikasi',
+            'name' => 'Kepala Dinas',
             'sector_id' => $sector2->id,
         ]);
         $occupation4 = Occupation::create([
             'id' => Str::uuid(),
-            'name' => 'Pengelola Penyelenggaraan Media Elektronik',
+            'name' => 'Kepala Bidang Tata Kelola Informatika',
+            'sector_id' => $sector2->id,
+        ]);
+        $occupation5 = Occupation::create([
+            'id' => Str::uuid(),
+            'name' => 'Kepala Bidang Informasi dan Komunikasi Publik',
             'sector_id' => $sector2->id,
         ]);
         
@@ -57,7 +62,7 @@ class DatabaseSeeder extends Seeder
             'occupation_id' => $occupation1->id,
             'name' => 'User1',
             'email' => 'user1@example.com',
-            'id'=>'b53ad881-14f5-498e-a9cb-9354f9b69ff1'
+            'id'=>'b53ad881-14f5-498e-a9cb-9354f9b69ff1',
         ]);
         $user2 = User::factory()->create([
             'occupation_id' => $occupation2->id,
@@ -74,14 +79,22 @@ class DatabaseSeeder extends Seeder
             'name' => 'User4',
             'email' => 'user4@example.com',
         ]);
-        Admin::factory()->create([
+        $admin = User::factory()->create([
+            'occupation_id' => $occupation3->id,
             'name' => 'Admin',
             'email' => 'admin@example.com',
         ]);
-        $supervisor1 = Supervisor::factory()->create([
-            'name' => 'Supervisor',
+        $supervisor1 = User::factory()->create([
+            'occupation_id' => $occupation4->id,
+            'name' => 'Supervisor1',
             'sector_id' => $sector1->id,
-            'email' => 'supervisor@example.com',
+            'email' => 'supervisor1@example.com',
+        ]);
+        $supervisor2 = User::factory()->create([
+            'occupation_id' => $occupation5->id,
+            'name' => 'Supervisor2',
+            'sector_id' => $sector2->id,
+            'email' => 'supervisor2@example.com',
         ]);
 
         // Program
@@ -104,7 +117,7 @@ class DatabaseSeeder extends Seeder
 
         $program3 = Program::create([
             'id' => Str::uuid(),
-            'sector_id' => $sector1 ->id,
+            'sector_id' => $sector2 ->id,
             'name' => 'Perbaikan Kabel Ethernet',
             'description' => 'Perbaikan kabel ethernet di kantor Diskominfo Karanganyar',
             'start_date' => '2024-9-1',

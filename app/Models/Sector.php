@@ -10,9 +10,9 @@ class Sector extends Model
     public $incrementing = false;
 
     protected $keyType = 'string';
-    public function supervisors()
+    public function user()
     {
-        return $this->hasOne(Supervisor::class);
+        return $this->hasOne(User::class);
     }
     public function programs()
     {

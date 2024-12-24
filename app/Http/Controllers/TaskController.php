@@ -258,17 +258,17 @@ class TaskController extends Controller
     public function getTaskTeam(Request $request, $id)
     {
         // $task = Task::find($id);
-        $user = User::find($request->user_id);
-        if (!$user) {
+        $task = Task::find($id);
+        if (!$task) {
             return response([
-                'message' => 'User tidak ditemukan'
+                'message' => 'Kegiatan tidak ditemukan'
             ], 404);
         }
-        $user->tasks()->detach($id);
+        $users = $task->users;
 
         return response([
-            'message' => 'Berhasil menghapus anggota tim dari kegiatan'
-        ], 204);
+            'users' => $users
+        ], 200);
         ;
     }
 
