@@ -80,44 +80,53 @@ class TaskController extends Controller
     }
 
     public function store(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'program_id' => 'required|string',
-            'name' => 'required|string',
-            'host' => 'required|string',
-            'date' => 'required|date',
-            'time' => 'required|date_format:H:i',
-            'description' => 'required|string',
-            'file' => 'mimes:pdf,doc,docx,jpg,png',
-        ], [
-            'file.mimes' => 'Tipe file tidak valid',
-        ]);
+{
+    $validator = Validator::make($request->all(), [
+        'program_id' => 'required|string',
+        'name' => 'required|string',
+        'host' => 'required|string',
+        'date' => 'required|date',
+        'time' => 'required|date_format:H:i',
+        'description' => 'required|string',
+        'file' => 'nullable|mimes:pdf,doc,docx,jpg,png|max:2048', // Maksimum ukuran file 2MB
+    ], [
+        'file.mimes' => 'Tipe file tidak valid',
+        'file.max' => 'Ukuran file maksimum adalah 2MB',
+    ]);
 
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Validation errors',
-                'errors' => $validator->errors(),
-            ], 422);
-        }
-
-        $task = new Task();
-        $task->program_id = $request->program_id;
-        $task->name = $request->name;
-        $task->host = $request->host;
-        $task->date = $request->date;
-        $task->time = $request->time;
-        $task->location = $request->location;
-        $task->description = $request->description;
-        $task->file = $request->file;
-        $task->save();
-
-        return response([
-            'message' => 'Kegiatan berhasil ditambahkan',
-            'task' => $task,
-        ], 201);
+    if ($validator->fails()) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Validation errors',
+            'errors' => $validator->errors(),
+        ], 422);
     }
 
+    $task = new Task();
+    $task->program_id = $request->program_id;
+    $task->name = $request->name;
+    $task->host = $request->host;
+    $task->date = $request->date;
+    $task->time = $request->time;
+    $task->location = $request->location;
+    $task->description = $request->description;
+
+    if ($request->hasFile('file')) {
+        // Simpan file ke folder storage/app/public/taskfiles
+        $filePath = $request->file('file')->store('taskfiles', 'public');
+        $task->file = basename($filePath); // Simpan nama file saja ke database
+    }
+
+    $task->save();
+
+    return response()->json([
+        'message' => 'Kegiatan berhasil ditambahkan',
+        'task' => $task,
+    ], 201);
+}
+
+    
+    
     public function show(string $id)
     {
         $task = Task::with([
@@ -143,7 +152,7 @@ class TaskController extends Controller
 
 
 
-    public function update(Request $request, string $id)
+    public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
             'program_id' => 'required|string',
@@ -152,11 +161,12 @@ class TaskController extends Controller
             'date' => 'required|date',
             'time' => 'required|date_format:H:i',
             'description' => 'required|string',
-            'file' => 'nullable|file|mimes:pdf,doc,docx,jpg,png',
+            'file' => 'nullable|mimes:pdf,doc,docx,jpg,png|max:2048', // Maksimum ukuran file 2MB
         ], [
             'file.mimes' => 'Tipe file tidak valid',
+            'file.max' => 'Ukuran file maksimum adalah 2MB',
         ]);
-
+    
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
@@ -164,28 +174,47 @@ class TaskController extends Controller
                 'errors' => $validator->errors(),
             ], 422);
         }
-
+    
         $task = Task::find($id);
+    
         if (!$task) {
-            return response([
-                'message' => 'Kegiatan tidak ditemukan'
+            return response()->json([
+                'success' => false,
+                'message' => 'Kegiatan tidak ditemukan',
             ], 404);
         }
-
+    
+        $task->program_id = $request->program_id;
         $task->name = $request->name;
         $task->host = $request->host;
         $task->date = $request->date;
         $task->time = $request->time;
         $task->location = $request->location;
         $task->description = $request->description;
-        $task->file = $request->file;
+    
+        if ($request->hasFile('file')) {
+            // Hapus file lama jika ada
+            if ($task->file) {
+                $oldFilePath = public_path('storage/taskfiles/' . $task->file);
+                if (file_exists($oldFilePath)) {
+                    unlink($oldFilePath); 
+                }
+            }
+    
+            // Simpan file baru
+            $filePath = $request->file('file')->store('taskfiles', 'public');
+            $task->file = basename($filePath); 
+        }
+    
         $task->save();
-
-        return response([
-            'message' => 'Kegiatan berhasil diedit',
+    
+        return response()->json([
+            'success' => true,
+            'message' => 'Kegiatan berhasil diperbarui',
             'task' => $task,
         ], 200);
     }
+    
 
     public function destroy(string $id)
     {
@@ -194,6 +223,13 @@ class TaskController extends Controller
             return response([
                 'message' => 'Kegiatan tidak ditemukan'
             ], 404);
+        }
+
+        if ($task->file) {
+            $filePath = public_path('storage/taskfiles/' . $task->file);
+            if (file_exists($filePath)) {
+                unlink($filePath);
+            }
         }
         $task->delete();
         return response([
