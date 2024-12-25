@@ -29,6 +29,10 @@ class DatabaseSeeder extends Seeder
             'id' => Str::uuid(),
             'name' => 'Informasi dan Komunikasi Publik'
         ]);
+        $sector3 = Sector::create([
+            'id' => Str::uuid(),
+            'name' => 'Kesekretariatan'
+        ]);
         
         // JABATAN
         $occupation1 = Occupation::create([
@@ -44,16 +48,26 @@ class DatabaseSeeder extends Seeder
         $occupation3 = Occupation::create([
             'id' => Str::uuid(),
             'name' => 'Kepala Dinas',
-            'sector_id' => $sector2->id,
+            'sector_id' => $sector3->id,
         ]);
         $occupation4 = Occupation::create([
             'id' => Str::uuid(),
             'name' => 'Kepala Bidang Tata Kelola Informatika',
-            'sector_id' => $sector2->id,
+            'sector_id' => $sector1->id,
         ]);
         $occupation5 = Occupation::create([
             'id' => Str::uuid(),
             'name' => 'Kepala Bidang Informasi dan Komunikasi Publik',
+            'sector_id' => $sector2->id,
+        ]);
+        $occupation6 = Occupation::create([
+            'id' => Str::uuid(),
+            'name' => 'Pengelolaan Media dan Data Statistik',
+            'sector_id' => $sector2->id,
+        ]);
+        $occupation7 = Occupation::create([
+            'id' => Str::uuid(),
+            'name' => 'Pelayanan Informasi Publik',
             'sector_id' => $sector2->id,
         ]);
         
@@ -78,6 +92,16 @@ class DatabaseSeeder extends Seeder
             'occupation_id' => $occupation2->id,
             'name' => 'User4',
             'email' => 'user4@example.com',
+        ]);
+        $user5 = User::factory()->create([
+            'occupation_id' => $occupation6->id,
+            'name' => 'User5',
+            'email' => 'user5@example.com',
+        ]);
+        $user6 = User::factory()->create([
+            'occupation_id' => $occupation7->id,
+            'name' => 'User6',
+            'email' => 'user6@example.com',
         ]);
         $admin = User::factory()->create([
             'occupation_id' => $occupation3->id,
@@ -117,7 +141,7 @@ class DatabaseSeeder extends Seeder
 
         $program3 = Program::create([
             'id' => Str::uuid(),
-            'sector_id' => $sector2 ->id,
+            'sector_id' => $sector1 ->id,
             'name' => 'Perbaikan Kabel Ethernet',
             'description' => 'Perbaikan kabel ethernet di kantor Diskominfo Karanganyar',
             'start_date' => '2024-9-1',

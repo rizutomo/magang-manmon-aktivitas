@@ -66,11 +66,14 @@ class SectorController extends Controller
     public function getUsersBySector(string $id)
     {
         $sector = Sector::with('users.occupation')->findOrFail($id);
-        $users = $sector->users;
-
+    
+        $users = $sector->users->filter(function ($user) {
+            return is_null($user->sector_id);
+        });
+    
         return response([
-            'users' => $users,
+            'users' => $users->values(),
         ], 200);
-
     }
+    
 }
