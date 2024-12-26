@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Ramsey\Uuid\Uuid;
 use Carbon\Carbon;
-
+use Illuminate\Support\Facades\Storage;
 class TaskController extends Controller
 {
     public function coba()
@@ -127,28 +127,32 @@ class TaskController extends Controller
 
     
     
-    public function show(string $id)
-    {
-        $task = Task::with([
-            'users',
-            'program.users' => function ($query) {
-                $query->withPivot('role');
-            }
-        ])->find($id);
-        $task = Task::find($id);
-
-        if (!$task) {
-            return response([
-                'message' => 'Kegiatan tidak ditemukan'
-            ], 404);
+public function show(string $id)
+{
+    $task = Task::with([
+        'users',
+        'program.users' => function ($query) {
+            $query->withPivot('role');
         }
+    ])->find($id);
 
+    if (!$task) {
         return response([
-            'task' => $task,
-            'task_users' => $task->users,
-            'program_users' => $task->program->users ?? []
-        ], 200);
+            'message' => 'Kegiatan tidak ditemukan'
+        ], 404);
     }
+
+    if ($task->file) {
+        $task->file = asset('storage/taskfiles/' . $task->file);
+    }
+
+    return response([
+        'task' => $task,
+        'task_users' => $task->users,
+        'program_users' => $task->program->users ?? []
+    ], 200);
+}
+
 
 
 
