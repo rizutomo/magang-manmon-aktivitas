@@ -60,81 +60,72 @@ class ReportController extends Controller
 
 
     public function store(Request $request)
-    {
-        $user_id = Auth::guard('')->user()->id;
-        $task_id = $request->input('task_id');
-        $user = User::findOrFail($user_id);
-        $task = Task::findOrFail($task_id);
+{
+    $user_id = Auth::guard('')->user()->id;
+    $task_id = $request->input('task_id');
+    $user = User::findOrFail($user_id);
+    $task = Task::findOrFail($task_id);
 
-        $request->validate([
-            'date' => 'nullable|date',
-            'time' => 'nullable|date_format:H:i',
-            'description' => 'nullable|string',
-            'latitude' => 'nullable|string',
-            'longitude' => 'nullable|string',
-            'photo' => 'nullable|mimes:jpg,png|max:61440',
-            'document' => 'nullable|mimes:pdf,doc,docx|max:20480', // Validasi file dokumen
-        ], [
-            'photo.required' => 'Harap tambahkan foto laporan anda',
-            'photo.mimes' => 'Tipe file foto tidak valid',
-            'photo.max' => 'Ukuran foto terlalu besar. Max : 60 MB',
-            'document.mimes' => 'Tipe file dokumen tidak valid',
-            'document.max' => 'Ukuran dokumen terlalu besar. Max : 20 MB',
+    $request->validate([
+        'date' => 'nullable|date',
+        'time' => 'nullable|date_format:H:i',
+        'description' => 'nullable|string',
+        'latitude' => 'nullable|string',
+        'longitude' => 'nullable|string',
+        'photo' => 'nullable|mimes:jpg,png|max:61440',
+        'documents.*' => 'nullable|mimes:pdf,doc,docx|max:20480',
+    ], [
+        'photo.required' => 'Harap tambahkan foto laporan anda',
+        'photo.mimes' => 'Tipe file foto tidak valid',
+        'photo.max' => 'Ukuran foto terlalu besar. Max : 60 MB',
+        'documents.*.mimes' => 'Tipe file dokumen tidak valid',
+        'documents.*.max' => 'Ukuran dokumen terlalu besar. Max : 20 MB',
+    ]);
+
+    $existingReport = $user->tasks()->where('task_id', $task_id)->first();
+
+    if ($existingReport) {
+        // Menghapus foto lama jika ada
+        if ($existingReport->pivot->photo && Storage::disk('public')->exists($existingReport->pivot->photo)) {
+            Storage::disk('public')->delete($existingReport->pivot->photo);
+        }
+
+        // Simpan foto baru jika ada
+        if ($request->hasFile('photo')) {
+            $photo = $request->file('photo');
+            $photoPath = $photo->store('reportfoto/' . $task->id, 'public');
+        } else {
+            $photoPath = null;
+        }
+
+        // Update data pada tabel `reports`
+        $user->tasks()->updateExistingPivot($task_id, [
+            'photo' => $photoPath,
+            'date' => $request->input('date'),
+            'description' => $request->input('description'),
+            'latitude' => $request->input('latitude'),
+            'longitude' => $request->input('longitude'),
         ]);
 
-        $existingReport = $user->tasks()->where('task_id', $task_id)->first();
+        $report = Report::where('user_id', $user_id)->where('task_id', $task_id)->first();
 
-        if ($existingReport) {
-            if ($existingReport->pivot->file) {
-                if (Storage::disk('local')->exists($existingReport->pivot->file)) {
-                    Storage::disk('local')->delete($existingReport->pivot->file);
-                }
-            }
-
-            if ($request->hasFile('photo')) {
-                $photo = $request->file('photo');
-                $originalName = pathinfo($photo->getClientOriginalName(), PATHINFO_FILENAME);
-                $extension = $photo->getClientOriginalExtension();
-                $randomString = Str::random(15);
-                $newPhotoName = $originalName . '_' . $randomString . '.' . $extension;
-                $photoPath = Storage::disk('local')->putFileAs('reportfoto/' . $task->id, $photo, $newPhotoName);
-            }
-
-            // Update data pada tabel `reports`
-            $user->tasks()->updateExistingPivot($task_id, [
-                'photo' => $photoPath,
-                'date' => $request->input('date'),
-                'description' => $request->input('description'),
-                'latitude' => $request->input('latitude'),
-                'longitude' => $request->input('longitude'),
-            ]);
-            $report = Report::where('user_id', $user_id)->where('task_id', $task_id)->first();
-
-            // Menyimpan dokumen report di tabel `report_file`
-            if ($report) {
-
-                if ($request->hasFile('documents')) {
-                    foreach ($request->file('documents') as $document) {
-                        $documentName = pathinfo($document->getClientOriginalName(), PATHINFO_FILENAME);
-                        $documentExtension = $document->getClientOriginalExtension();
-                        $documentRandomString = Str::random(15);
-                        $newDocumentName = $documentName . '_' . $documentRandomString . '.' . $documentExtension;
-                        $documentPath = Storage::disk('local')->putFileAs('reportdocs/' . $task->id, $document, $newDocumentName);
-
-                        // Buat entri baru di tabel `report_file`
-                        ReportFile::create([
-                            'report_id' => $report->id,
-                            'name' => $documentPath,
-                        ]);
-                    }
-                }
-
-                return response()->json(['success' => 'Pengumpulan berhasil diperbarui'], 200);
+        // Simpan dokumen jika ada
+        if ($report && $request->hasFile('documents')) {
+            foreach ($request->file('documents') as $document) {
+                $documentPath = $document->store('reportdocs/' . $task->id, 'public');
+                ReportFile::create([
+                    'report_id' => $report->id,
+                    'name' => $documentPath,
+                ]);
             }
         }
 
-        return response()->json(['error' => 'Pengumpulan gagal'], 404);
+        return response()->json(['success' => 'Pengumpulan berhasil diperbarui'], 200);
     }
+
+    return response()->json(['error' => 'Pengumpulan gagal'], 404);
+}
+
 
     public function destroy($report_id)
     {
