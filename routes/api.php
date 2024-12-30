@@ -47,6 +47,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('task/{id}/attachTeam', [TaskController::class, 'attachTeam'])->name('task.attachTeam');
         Route::delete('task/{id}/detachTeam', [TaskController::class, 'detachTeam'])->name('task.detachTeam');
         Route::get('task', [TaskController::class, 'indexall'])->name('task.indexall');
+        Route::get('report/{task_id}', [ReportController::class, 'index'])->name('report.indexbytask');
         
     });
     Route::middleware('role:admin|supervisor|user')->group(function () {
