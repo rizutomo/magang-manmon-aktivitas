@@ -81,6 +81,20 @@ class ProgramController extends Controller
         $count = Program::count();
         return response()->json(['count' => $count]);
     }
+    public function getProgramCountBySector()
+    {
+        $user = auth()->user();
+        $sector_id = $user->sector_id;
+        $count = Program::where('sector_id', $sector_id)->count();
+        return response()->json(['count' => $count]);
+    }
+    public function getProgramCountByUser()
+    {
+        $user = auth()->user();
+        $count = $user->programs->count();
+        return response()->json(['count' => $count]);
+    }
+
     public function getByUserId(Request $request)
     {
         $user = auth()->user();
@@ -247,7 +261,7 @@ class ProgramController extends Controller
 
         return response()->json(['count' => $count]);
     }
-    
+
     public function getProgramEndedCount()
     {
         $count = Program::where('end_date', '<', Carbon::now())->count();

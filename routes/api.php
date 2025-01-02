@@ -35,6 +35,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
     Route::middleware('role:admin|supervisor')->group(function () {
         //SUPERVISOR
+        Route::get('program/count/sector', [ProgramController::class, 'getProgramCountBySector'])->name('program.sectorCount');
         Route::post('task', [TaskController::class, 'store'])->name('task.store');
         Route::put('task/{id}', [TaskController::class, 'update'])->name('task.update');
         Route::delete('task/{id}', [TaskController::class, 'destroy'])->name('task.destroy');
@@ -52,6 +53,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
     Route::middleware('role:admin|supervisor|user')->group(function () {
         //USER
+        Route::get('program/count/user', [ProgramController::class, 'getProgramCountByUser'])->name('program.sectorCount');
         Route::get('user/program/', [ProgramController::class, 'getByUserId'])->name('program.getByUserId');
         Route::get('count/program', [ProgramController::class, 'getTotalByUser'])->name('program.getTotalByUser');
         Route::get('program-{program_id}/task', [TaskController::class, 'index'])->name('task.index');
