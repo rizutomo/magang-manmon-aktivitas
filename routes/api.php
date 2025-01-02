@@ -12,7 +12,7 @@ use App\Http\Controllers\ReportController;
 Route::post('login', [AuthController::class, 'login']);
 Route::post('send-reset-code', [AuthController::class, 'sendResetCode']);
 Route::post('reset-password', [AuthController::class, 'resetPassword']);
-
+Route::middleware('auth:sanctum')->get('user/profile', [AuthController::class, 'getProfile']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::middleware('role:admin')->group(function () {
         Route::get('user', [AuthController::class, 'getAllUser']);

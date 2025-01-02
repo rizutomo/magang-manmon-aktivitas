@@ -62,7 +62,7 @@ class User extends Authenticatable
 
     public function sector()
     {
-        return $this->belongsTo(Sector::class);
+        return $this->belongsTo(Sector::class, 'sector_id');
     }
 
     public function tasks()
@@ -72,7 +72,7 @@ class User extends Authenticatable
 
     public function occupation()
     {
-        return $this->belongsTo(Occupation::class)->with('sector');
+        return $this->belongsTo(Occupation::class, 'occupation_id')->with('sector');
     }
 
     // public function sendPasswordResetNotification($token)

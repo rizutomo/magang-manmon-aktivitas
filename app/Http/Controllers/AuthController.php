@@ -101,6 +101,25 @@ class AuthController extends Controller
     }
 
 
+    public function getProfile(Request $request)
+    {
+        $user = auth()->user();
+
+        if (!$user) {
+            return response()->json(['error' => 'User not authenticated'], 401);
+        }
+
+        $user->load('occupation', 'sector');
+
+        return response()->json([
+            'name' => $user->name,
+            'jabatan' => $user->occupation ? $user->occupation->name : 'Tidak ada jabatan', // Mengambil nama jabatan dari occupation
+            'bidang' => $user->sector ? $user->sector->name : 'Tidak ada bidang', // Mengambil nama bidang dari sector
+            'email' => $user->email,
+            'imageUrl' => $user->imageUrl ?? '/profile.jpg',
+        ]);
+    }
+
     public function logout(Request $request)
     {
         $user = auth()->user();
