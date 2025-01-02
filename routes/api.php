@@ -36,11 +36,15 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::middleware('role:admin|supervisor')->group(function () {
         //SUPERVISOR
         Route::get('program/count/sector', [ProgramController::class, 'getProgramCountBySector'])->name('program.sectorCount');
+        Route::get('program/ended/count/sector', [ProgramController::class, 'getEndedProgramCountBySector'])->name('program.endedCountSector');
+        Route::get('program/count/sector', [ProgramController::class, 'getProgramCountBySector'])->name('program.countsector');
         Route::post('task', [TaskController::class, 'store'])->name('task.store');
         Route::put('task/{id}', [TaskController::class, 'update'])->name('task.update');
         Route::delete('task/{id}', [TaskController::class, 'destroy'])->name('task.destroy');
         Route::get('program/sector', [ProgramController::class, 'getBySector'])->name('program.getBySector');
+        Route::get('program/upcoming/sector', [ProgramController::class, 'upcomingProgramsBySector'])->name('program.upcomingSector');
         Route::get('getUsersBySector/{id}/', [SectorController::class, 'getUsersBySector'])->name('sector.getUsersBySector');
+        Route::get('program/in-progress/sector', [ProgramController::class, 'getProgramSectorProgress'])->name('program.sectorprogress');
         Route::post('program-{program_id}/team', [TeamController::class, 'store'])->name('team.store');
         Route::post('program-{program_id}/team/many/', [TeamController::class, 'storeMany'])->name('team.store');
         Route::put('program-{program_id}/team', [TeamController::class, 'update'])->name('team.store');
@@ -48,6 +52,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('task/{id}/attachTeam', [TaskController::class, 'attachTeam'])->name('task.attachTeam');
         Route::delete('task/{id}/detachTeam', [TaskController::class, 'detachTeam'])->name('task.detachTeam');
         Route::get('task', [TaskController::class, 'indexall'])->name('task.indexall');
+        Route::get('task/sector', [TaskController::class, 'getTaskBySector'])->name('task.indexSector');
+        Route::get('task/sector/upcoming', [TaskController::class, 'upcomingTaskBySector'])->name('task.indexSectorUpcoming');
         Route::get('report/{task_id}', [ReportController::class, 'index'])->name('report.indexbytask');
         
     });
@@ -55,10 +61,14 @@ Route::middleware('auth:sanctum')->group(function () {
         //USER
         Route::get('program/count/user', [ProgramController::class, 'getProgramCountByUser'])->name('program.sectorCount');
         Route::get('user/program/', [ProgramController::class, 'getByUserId'])->name('program.getByUserId');
+        Route::get('user/program/upcoming', [ProgramController::class, 'upcomingProgramsByUser'])->name('program.getByUserIdUpcoming');
+        Route::get('user/program/in-progress', [ProgramController::class, 'getInProgressUserProgramCount'])->name('program.getByUserIdInProgress');
+        Route::get('user/program/ended', [ProgramController::class, 'getEndedUserProgramCount'])->name('program.getByUserIdEnd');
         Route::get('count/program', [ProgramController::class, 'getTotalByUser'])->name('program.getTotalByUser');
         Route::get('program-{program_id}/task', [TaskController::class, 'index'])->name('task.index');
         Route::get('program/{program_id}/team', [TeamController::class, 'show'])->name('team.show');
         Route::get('user/task', [TaskController::class, 'getByUserId'])->name('task.getByUserId');
+        Route::get('user/task/upcoming', [TaskController::class, 'upcomingTaskByUser'])->name('task.getByUserIdUpcoming');
         Route::get('count/task', [TaskController::class, 'getTotalbyUser'])->name('task.getTotalbyUser');
         Route::get('task/{id}', [TaskController::class, 'show'])->name('task.show');
         Route::get('task-{id}/team', [TaskController::class, 'getTaskTeam'])->name('task.getTaskTeam');

@@ -287,6 +287,83 @@ class ProgramController extends Controller
         ], 200);
     }
 
+    public function upcomingProgramsBySector()
+{
+    $user = auth()->user();
+    $sector = $user->sector;
+    $today = Carbon::today();
+
+    $programs = $sector->programs()
+        ->with('tasks')
+        ->where('end_date', '>=', $today)
+        ->orderBy('start_date', 'asc')
+        ->get();
+
+    if ($programs->isEmpty()) {
+        return response()->json([
+            'message' => 'Program tidak ditemukan'
+        ], 404);
+    }
+
+    return response()->json([
+        'programs' => $programs
+    ], 200);
+}
+
+public function upcomingProgramsByUser()
+{
+    $user = auth()->user();
+    $today = Carbon::today();
+
+    // Ambil program mendatang berdasarkan pengguna
+    $programs = $user->programs()->with([
+        'sector',
+        'tasks.users' => function ($query) {
+            $query->withPivot('status');
+        }
+    ])->where('end_date', '>=', $today)
+      ->orderBy('start_date', 'asc')
+      ->get();
+
+    if ($programs->isEmpty()) {
+        return response()->json([
+            'message' => 'Program tidak ditemukan'
+        ], 404);
+    }
+
+    $programsData = $programs->map(function ($program) {
+        $totalTasks = $program->tasks->count();
+
+        $completedTasks = $program->tasks->filter(function ($task) {
+            return $task->users->every(function ($user) {
+                return $user->pivot->status === ReportStatus::Diterima->value;
+            });
+        })->count();
+
+        $coordinator = $program->users->filter(function ($user) {
+            return $user->pivot->role === 'koordinator';
+        })->first();
+
+        return [
+            'id' => $program->id,
+            'name' => $program->name,
+            'sector' => $program->sector,
+            'start_date' => $program->start_date,
+            'end_date' => $program->end_date,
+            'total_tasks' => $totalTasks,
+            'completed_tasks' => $completedTasks,
+            'description' => $program->description,
+            'coordinator' => $coordinator,
+        ];
+    });
+
+    return response()->json([
+        'programs' => $programsData
+    ], 200);
+}
+
+
+
     public function getBySector()
     {
         $user = auth()->user();
@@ -330,4 +407,68 @@ class ProgramController extends Controller
             'programs' => $programsData
         ], 200);
     }
+
+    public function getProgramSectorProgress()
+    {
+        $user = auth()->user();
+        $sector = $user->sector;
+    
+        // Hitung jumlah program yang sedang berjalan
+        $count = $sector->programs()
+            ->where('end_date', '>', Carbon::now())
+            ->count();
+    
+        return response()->json(['count' => $count]);
+    }
+    public function getProgramCountBySector()
+{
+    $user = auth()->user();
+    $sector = $user->sector;
+
+    
+    $count = $sector->programs()->count();
+
+    return response()->json(['count' => $count]);
+}
+
+public function getEndedProgramCountBySector()
+{
+    $user = auth()->user();
+    $sector = $user->sector;
+
+    // Hitung jumlah program yang telah berakhir
+    $count = $sector->programs()
+        ->where('end_date', '<=', Carbon::now())
+        ->count();
+
+    return response()->json(['count' => $count]);
+}
+
+public function getEndedUserProgramCount()
+{
+    $user = auth()->user();
+
+    // Hitung program yang telah berakhir
+    $count = $user->programs()
+        ->where('end_date', '<=', Carbon::now())
+        ->count();
+
+    return response()->json(['count' => $count]);
+}
+
+public function getInProgressUserProgramCount()
+{
+    $user = auth()->user();
+
+    // Hitung program yang sedang berjalan
+    $count = $user->programs()
+        ->where('end_date', '>', Carbon::now())
+        ->count();
+
+    return response()->json(['count' => $count]);
+}
+
+
+    
+
 }
