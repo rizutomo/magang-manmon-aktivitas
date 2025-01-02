@@ -69,6 +69,26 @@ class TaskController extends Controller
         $count = Task::count();
         return response()->json(['count' => $count]);
     }
+    
+    public function getTaskCountBySector()
+    {
+        $user = auth()->user();
+        $sector = $user->sector;
+
+
+        $count = $sector->programs()->withCount('tasks')->get()->sum('tasks_count');
+
+        return response()->json(['count' => $count]);
+    }
+
+
+    public function getTaskCountByUser()
+    {
+        $user = auth()->user();
+        $count = $user->tasks()->count();
+        return response()->json(['count' => $count]);
+    }
+
 
     public function getTotalbyUser(Request $request)
     {
