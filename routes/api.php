@@ -35,7 +35,6 @@ Route::middleware('auth:sanctum')->group(function () {
     });
     Route::middleware('role:admin|supervisor')->group(function () {
         //SUPERVISOR
-        Route::get('program/count/sector', [ProgramController::class, 'getProgramCountBySector'])->name('program.sectorCount');
         Route::get('program/ended/count/sector', [ProgramController::class, 'getEndedProgramCountBySector'])->name('program.endedCountSector');
         Route::get('program/count/sector', [ProgramController::class, 'getProgramCountBySector'])->name('program.countsector');
         Route::post('task', [TaskController::class, 'store'])->name('task.store');

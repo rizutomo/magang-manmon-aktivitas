@@ -81,20 +81,6 @@ class ProgramController extends Controller
         $count = Program::count();
         return response()->json(['count' => $count]);
     }
-    public function getProgramCountBySector()
-    {
-        $user = auth()->user();
-        $sector_id = $user->sector_id;
-        $count = Program::where('sector_id', $sector_id)->count();
-        return response()->json(['count' => $count]);
-    }
-    public function getProgramCountByUser()
-    {
-        $user = auth()->user();
-        $count = $user->programs->count();
-        return response()->json(['count' => $count]);
-    }
-
     public function getByUserId(Request $request)
     {
         $user = auth()->user();
@@ -261,7 +247,7 @@ class ProgramController extends Controller
 
         return response()->json(['count' => $count]);
     }
-
+    
     public function getProgramEndedCount()
     {
         $count = Program::where('end_date', '<', Carbon::now())->count();
@@ -318,9 +304,8 @@ public function upcomingProgramsByUser()
     // Ambil program mendatang berdasarkan pengguna
     $programs = $user->programs()->with([
         'sector',
-        'tasks.users' => function ($query) {
-            $query->withPivot('status');
-        }
+        'tasks.users',
+        'tasks.report'
     ])->where('end_date', '>=', $today)
       ->orderBy('start_date', 'asc')
       ->get();
@@ -335,9 +320,7 @@ public function upcomingProgramsByUser()
         $totalTasks = $program->tasks->count();
 
         $completedTasks = $program->tasks->filter(function ($task) {
-            return $task->users->every(function ($user) {
-                return $user->pivot->status === ReportStatus::Diterima->value;
-            });
+            return $task->report && $task->report->status === ReportStatus::Diterima->value;
         })->count();
 
         $coordinator = $program->users->filter(function ($user) {
@@ -370,9 +353,8 @@ public function upcomingProgramsByUser()
         $sector = $user->sector;
         $programs = $sector->programs()->with([
             'sector',
-            'tasks.users' => function ($query) {
-                $query->withPivot('status');
-            }
+            'tasks.users',
+            'tasks.report'
         ])->get();
 
         // dd($programs);
@@ -381,9 +363,7 @@ public function upcomingProgramsByUser()
             $totalTasks = $program->tasks->count();
 
             $completedTasks = $program->tasks->filter(function ($task) {
-                return $task->users->every(function ($user) {
-                    return $user->pivot->status === ReportStatus::Diterima->value;
-                });
+                return $task->report && $task->report->status === ReportStatus::Diterima->value;
             })->count();
 
             $coordinator = $program->users->filter(function ($user) {

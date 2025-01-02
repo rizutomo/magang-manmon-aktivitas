@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('longitude')->nullable();
             $table->string('latitude')->nullable();
             $table->date('date')->nullable();
-            $table->enum('status', ['Belum Diserahkan', 'Diserahkan', 'Diterima', 'Pending'])->default('Belum Diserahkan');
+            $table->enum('status', ['Diserahkan', 'Diterima', 'Pending'])->default('Diserahkan');
             $table->string('modified_by')->nullable();
             $table->string('comment')->nullable();
             $table->timestamps();

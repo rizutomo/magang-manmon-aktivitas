@@ -256,7 +256,7 @@ public function show(string $id)
             // $role = 'anggota';
 
             if ($user) {
-                $user->tasks()->attach($id, ['id' => Str::uuid()]);
+                $user->tasks()->attach($id);
             } else {
                 return response([
                     'message' => "User dengan ID {$request->id} tidak ditemukan.",
@@ -357,17 +357,18 @@ public function getTaskBySector()
 {
     $user = auth()->user(); 
     $sector = $user->sector; 
+    
     if (!$sector) {
-        return response([
+        return response()->json([
             'message' => 'Sektor tidak ditemukan untuk pengguna ini'
         ], 404);
     }
 
-    $tasks = $sector->programs()->with(['tasks.users' => function ($query) {
-        $query->withPivot('status');
-    }])->get()->flatMap(function ($program) {
+    $tasks = $sector->programs()->with([
+        'tasks.users',
+        'tasks.report'
+    ])->get()->flatMap(function ($program) {
         return $program->tasks->map(function ($task) use ($program) {
-
             return [
                 'id' => $task->id,
                 'name' => $task->name,
@@ -381,17 +382,18 @@ public function getTaskBySector()
                     return [
                         'id' => $user->id,
                         'name' => $user->name,
-                        'status' => $user->pivot->status,
                     ];
-                })
+                }),
+                'status' => $task->report->status ?? 'Belum Diserahkan',
             ];
         });
     });
 
-    return response([
+    return response()->json([
         'tasks' => $tasks
     ], 200);
 }
+
 
 public function upcomingTaskBySector()
 {
@@ -409,9 +411,9 @@ public function upcomingTaskBySector()
     $tasks = $sector->programs()->with(['tasks' => function ($query) use ($today) {
         $query->where('date', '>=', $today)
               ->orderBy('date', 'asc');
-    }, 'tasks.users' => function ($query) {
-        $query->withPivot('status');
-    }])->get()
+    }, 'tasks.users', 
+        'tasks.report'
+    ])->get()
       ->flatMap(function ($program) {
         return $program->tasks->map(function ($task) use ($program) {
             return [
@@ -427,9 +429,9 @@ public function upcomingTaskBySector()
                     return [
                         'id' => $user->id,
                         'name' => $user->name,
-                        'status' => $user->pivot->status,
                     ];
-                })
+                }),
+                'status'=> $task->report->status ?? 'Belum Diserahkan',
             ];
         });
     });
