@@ -7,6 +7,7 @@ use App\Models\Program;
 use App\Models\Sector;
 use App\Models\Task;
 use App\Models\User;
+use App\Models\Report;
 use App\Models\Admin;
 use App\Models\Supervisor;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -33,7 +34,7 @@ class DatabaseSeeder extends Seeder
             'id' => Str::uuid(),
             'name' => 'Kesekretariatan'
         ]);
-        
+
         // JABATAN
         $occupation1 = Occupation::create([
             'id' => Str::uuid(),
@@ -70,13 +71,13 @@ class DatabaseSeeder extends Seeder
             'name' => 'Pelayanan Informasi Publik',
             'sector_id' => $sector2->id,
         ]);
-        
+
         // ACCOUNT
         $user1 = User::factory()->create([
             'occupation_id' => $occupation1->id,
             'name' => 'User1',
             'email' => 'user1@example.com',
-            'id'=>'b53ad881-14f5-498e-a9cb-9354f9b69ff1',
+            'id' => 'b53ad881-14f5-498e-a9cb-9354f9b69ff1',
         ]);
         $user2 = User::factory()->create([
             'occupation_id' => $occupation2->id,
@@ -124,7 +125,7 @@ class DatabaseSeeder extends Seeder
         // Program
         $program1 = Program::create([
             'id' => Str::uuid(),
-            'sector_id' => $sector1 ->id,
+            'sector_id' => $sector1->id,
             'name' => 'Perbaikan CCTV',
             'description' => 'Perbaikan CCTV di kantor Diskominfo Karanganyar',
             'start_date' => '2024-9-1',
@@ -132,7 +133,7 @@ class DatabaseSeeder extends Seeder
         ]);
         $program2 = Program::create([
             'id' => Str::uuid(),
-            'sector_id' => $sector1 ->id,
+            'sector_id' => $sector1->id,
             'name' => 'Perbaikan Router Wi-Fi',
             'description' => 'Perbaikan router Wi-Fi di kantor Diskominfo Karanganyar',
             'start_date' => '2024-9-1',
@@ -141,13 +142,13 @@ class DatabaseSeeder extends Seeder
 
         $program3 = Program::create([
             'id' => Str::uuid(),
-            'sector_id' => $sector1 ->id,
+            'sector_id' => $sector1->id,
             'name' => 'Perbaikan Kabel Ethernet',
             'description' => 'Perbaikan kabel ethernet di kantor Diskominfo Karanganyar',
             'start_date' => '2024-9-1',
             'end_date' => '2024-12-22',
         ]);
-        
+
         // TEAM
         $user1->programs()->attach($program1->id, ['role' => 'koordinator']);
         $user2->programs()->attach($program1->id, ['role' => 'anggota']);
@@ -178,9 +179,9 @@ class DatabaseSeeder extends Seeder
             'file' => 'task_file.pdf',
         ]);
         $task3 = Task::create([
-            'program_id' => $program1->id,
+            'program_id' => $program2->id,
             'id' => Str::uuid(),
-            'name' => 'Perbaikan CCTV Gedung C',
+            'name' => 'Perbaikan Router Gedung C',
             'host' => 'Diskominfo Karanganyar',
             'date' => '2024-12-20',
             'location' => 'Karanganyar',
@@ -189,12 +190,38 @@ class DatabaseSeeder extends Seeder
             'file' => 'task_file.pdf',
         ]);
 
-        $user1->tasks()->attach($task1-> id,['id' => Str::uuid(), 'photo' => 'report_photo.jpg', 'description' => 'CCTV berhasil diperbaiki', 'longitude' => '-7.595910857727733', 'latitude' => '110.94004966685802', 'date' => '2024-9-1']);
-        $user2->tasks()->attach($task1-> id,['id' => Str::uuid(), 'photo' => 'report_photo.jpg', 'description' => 'CCTV berhasil diperbaiki', 'longitude' => '-7.595910857727733', 'latitude' => '110.94004966685802', 'date' => '2024-9-1']);
-        $user3->tasks()->attach($task1-> id,['id' => Str::uuid(), 'photo' => 'report_photo.jpg', 'description' => 'CCTV berhasil diperbaiki', 'longitude' => '-7.595910857727733', 'latitude' => '110.94004966685802', 'date' => '2024-9-1']);
+        $Report1 = Report::create([
+            'id' => Str::uuid(),
+            'task_id' => $task1->id,
+            'photo' => 'report_photo.jpg',
+            'description' => 'CCTV berhasil diperbaiki',
+            'longitude' => '-7.595910857727733',
+            'latitude' => '110.94004966685802',
+            'date' => '2024-9-1',
+            'modified_by' => $user1->id,
+            'comment' => 'nice'
+        ]);
+        $Report2 = Report::create([
+            'id' => Str::uuid(),
+            'task_id' => $task3->id,
+            'photo' => 'report_photo.jpg',
+            'description' => 'Router Wi-Fi berhasil diperbaiki',
+            'longitude' => '-7.595910857727733',
+            'latitude' => '110.94004966685802',
+            'date' => '2024-9-2',
+            'modified_by' => $user3->id,
+            'comment' => 'nice'
+        ]);
+
+        $user1->tasks()->attach($task1->id);
+        $user2->tasks()->attach($task1->id);
+        $user3->tasks()->attach($task1->id);
+        $user4->tasks()->attach($task1->id);
         
-        $user3->tasks()->attach($task2-> id,['id' => Str::uuid(), 'photo' => 'report_photo.jpg', 'description' => 'Router Wi-Fi berhasil diperbaiki', 'longitude' => '-7.595910857727733', 'latitude' => '110.94004966685802', 'date' => '2024-9-2']);
-        $user4->tasks()->attach($task2-> id,['id' => Str::uuid(), 'photo' => 'report_photo.jpg', 'description' => 'Router Wi-Fi berhasil diperbaiki', 'longitude' => '-7.595910857727733', 'latitude' => '110.94004966685802', 'date' => '2024-9-2']);
+        $user1->tasks()->attach($task2->id);
+        $user3->tasks()->attach($task2->id);
         
+        $user3->tasks()->attach($task3->id);
+        $user4->tasks()->attach($task3->id);
     }
 }

@@ -27,7 +27,7 @@ class TeamController extends Controller
     {
 
         $user = User::find($request->id);
-        $role = $request->role;
+        $role = 'koordinator';
 
         if ($user) {
             $user->programs()->attach($program_id, ['role' => $role]);

@@ -13,7 +13,6 @@ return new class extends Migration
     {
         Schema::create('reports', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->string('user_id');
             $table->string('task_id');
             $table->string('photo')->nullable();
             $table->string('description')->nullable();
@@ -21,10 +20,12 @@ return new class extends Migration
             $table->string('latitude')->nullable();
             $table->date('date')->nullable();
             $table->enum('status', ['Belum Diserahkan', 'Diserahkan', 'Diterima', 'Pending'])->default('Belum Diserahkan');
+            $table->string('modified_by')->nullable();
+            $table->string('comment')->nullable();
             $table->timestamps();
 
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('task_id')->references('id')->on('tasks')->onDelete('cascade');
+            $table->foreign('modified_by')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

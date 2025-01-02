@@ -60,6 +60,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('count/task', [TaskController::class, 'getTotalbyUser'])->name('task.getTotalbyUser');
         Route::get('task/{id}', [TaskController::class, 'show'])->name('task.show');
         Route::get('task-{id}/team', [TaskController::class, 'getTaskTeam'])->name('task.getTaskTeam');
+        Route::get('task-{task_id}/team2', [ReportController::class, 'index'])->name('task.getTaskTeam');
         Route::post('report', [ReportController::class, 'store'])->name('report.store');
         Route::delete('report/{report_id}', [ReportController::class, 'destroy'])->name('report.delete');
         //AUTH

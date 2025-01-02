@@ -17,7 +17,7 @@ class ReportFile extends Model
 
     public function report()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Report::class);
     }
 
     //UUID boot

@@ -20,6 +20,10 @@ class Report extends Model
         'status' => ReportStatus::class, // Menggunakan enum untuk casting
     ];
 
+    public function task()
+    {
+        return $this->belongsTo(Task::class);
+    }
     public function files()
     {
         return $this->hasMany(ReportFile::class);

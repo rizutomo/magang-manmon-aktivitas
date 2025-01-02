@@ -17,9 +17,8 @@ class ProgramController extends Controller
     {
         $programs = Program::with([
             'sector',
-            'tasks.users' => function ($query) {
-                $query->withPivot('status');
-            }
+            'tasks.users',
+            'tasks.report'
         ])->get();
 
         // dd($programs);
@@ -28,9 +27,7 @@ class ProgramController extends Controller
             $totalTasks = $program->tasks->count();
 
             $completedTasks = $program->tasks->filter(function ($task) {
-                return $task->users->every(function ($user) {
-                    return $user->pivot->status === ReportStatus::Diterima->value;
-                });
+                return $task->report && $task->report->status === ReportStatus::Diterima->value;
             })->count();
 
             $coordinator = $program->users->filter(function ($user) {
@@ -90,9 +87,8 @@ class ProgramController extends Controller
         // dd($user);
         $programs = $user->programs()->with([
             'sector',
-            'tasks.users' => function ($query) {
-                $query->withPivot('status');
-            }
+            'tasks.users',
+            'tasks.report'
         ])->get();
 
         // dd($programs);
@@ -101,9 +97,7 @@ class ProgramController extends Controller
             $totalTasks = $program->tasks->count();
 
             $completedTasks = $program->tasks->filter(function ($task) {
-                return $task->users->every(function ($user) {
-                    return $user->pivot->status === ReportStatus::Diterima->value;
-                });
+                return $task->report && $task->report->status === ReportStatus::Diterima->value;
             })->count();
 
             $coordinator = $program->users->filter(function ($user) {
@@ -246,12 +240,14 @@ class ProgramController extends Controller
             'message' => 'Program berhasil dihapus'
         ], 204);
     }
+
     public function getProgramInProgressCount()
     {
         $count = Program::where('end_date', '>', Carbon::now())->count();
 
         return response()->json(['count' => $count]);
     }
+    
     public function getProgramEndedCount()
     {
         $count = Program::where('end_date', '<', Carbon::now())->count();

@@ -55,7 +55,7 @@ class TaskController extends Controller
     public function getByUserId(Request $request)
     {
         $user = $request->user();
-        $tasks = $user->tasks()->get();
+        $tasks = $user->tasks()->with('report')->get();
         $totalTask = $tasks->count();
 
         return response([

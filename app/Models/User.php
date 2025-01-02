@@ -67,7 +67,7 @@ class User extends Authenticatable
 
     public function tasks()
     {
-        return $this->belongsToMany(Task::class, 'reports')->withPivot('photo', 'description', 'longitude', 'latitude', 'date', 'status');
+        return $this->belongsToMany(Task::class, 'task_teams');
     }
 
     public function occupation()
