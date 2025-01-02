@@ -43,20 +43,61 @@ class ReportController extends Controller
     //     ], 200);
     // }
 
-    public function update($program_id)
-    {
-        $program = Program::find($program_id);
-        if (!$program) {
-            return response([
-                'message' => 'Program tidak ditemukan',
-            ], 200);
+    public function update(Request $request, $report_id)
+{
+    // Cari laporan berdasarkan report_id dari parameter URL
+    $report = Report::findOrFail($report_id);
+    $user_id = auth()->user()->id;
+
+    // Validasi input
+    $validatedData = $request->validate([
+        'date' => 'nullable|date',
+        'description' => 'nullable|string',
+        'latitude' => 'nullable|string',
+        'longitude' => 'nullable|string',
+        'photo' => 'nullable|mimes:jpg,png|max:61440',
+        'documents.*' => 'nullable|mimes:pdf,doc,docx|max:20480',
+    ]);
+
+    // Perbarui data hanya jika input tersedia
+    $report->date = $request->input('date', $report->date);
+    $report->description = $request->input('description', $report->description);
+    $report->latitude = $request->input('latitude', $report->latitude);
+    $report->longitude = $request->input('longitude', $report->longitude);
+
+    // Assign ID user sebagai modifier
+    $report->modified_by = $user_id;
+
+    // Proses upload foto jika ada
+    if ($request->hasFile('photo')) {
+        if ($report->photo) {
+            Storage::disk('public')->delete($report->photo);
         }
-        $teamMember = $program->users()->with('occupation')->get();
-        return response([
-            'team' => $teamMember,
-        ], 200);
+        $report->photo = $request->file('photo')->store('reportfoto/' . $report->task_id, 'public');
     }
 
+    // Simpan perubahan pada model
+    $report->save();
+
+    // Proses dokumen jika ada
+    if ($request->hasFile('documents')) {
+        foreach ($request->file('documents') as $document) {
+            $documentPath = $document->store('reportdocs/' . $report->task_id, 'public');
+            ReportFile::create([
+                'report_id' => $report->id,
+                'name' => $documentPath,
+            ]);
+        }
+    }
+
+    // Ambil data laporan beserta file terkait untuk respon
+    $report = Report::with('files')->find($report->id);
+
+    return response()->json([
+        'message' => 'Laporan berhasil diperbarui',
+        'data' => $report,
+    ], 200);
+}
 
     public function store(Request $request)
     {
@@ -138,50 +179,61 @@ class ReportController extends Controller
         return response()->json(['error' => 'Pengumpulan gagal'], 404);
     }
 
-
     public function destroy($report_id)
     {
-        $user = Auth::user();
-        $report = Report::where('id', $report_id)->first();
-
-        if ($report) {
-            $task_id = $report->task_id;
-            $existingReport = Report::where('task_id', $task_id)->first();
-
-            if ($existingReport) {
-                // Delete the associated photo if it exists
-                if ($existingReport->file && Storage::disk('local')->exists($existingReport->file)) {
-                    Storage::disk('local')->delete($existingReport->file);
-                }
-
-                // Empty data in the `reports` table without deleting the entry
-                // $user->tasks()->updateExistingPivot($task_id, [
-                //     'photo' => null,
-                //     'date' => null,
-                //     'description' => null,
-                //     'latitude' => null,
-                //     'longitude' => null,
-                // ]);
-
-                // Delete all document files related to the report in `report_file`
-                $reportFiles = ReportFile::where('report_id', $report->id)->get();
-
-                foreach ($reportFiles as $reportFile) {
-                    if (Storage::disk('local')->exists($reportFile->name)) {
-                        Storage::disk('local')->delete($reportFile->name);
-                    }
-                    // Delete the report file record
-                    $reportFile->delete();
-                }
-
-                $existingReport->delete();
-
-                return response()->json(['success' => 'Data berhasil dihapus'], 200);
-            }
+        $report = Report::find($report_id);
+        if (!$report) {
+            return response()->json(['error' => 'Laporan tidak ditemukan'], 404);
         }
-
-        return response()->json(['error' => 'Pengumpulan tidak ditemukan'], 404);
+    
+        // Hapus foto laporan jika ada
+        if ($report->photo && Storage::disk('public')->exists($report->photo)) {
+            Storage::disk('public')->delete($report->photo);
+        }
+    
+        // Hapus semua file dokumen terkait
+        $reportFiles = ReportFile::where('report_id', $report_id)->get();
+        foreach ($reportFiles as $reportFile) {
+            if (Storage::disk('public')->exists($reportFile->name)) {
+                Storage::disk('public')->delete($reportFile->name);
+            }
+            $reportFile->delete();
+        }
+    
+        // Hapus laporan
+        $report->delete();
+    
+        return response()->json(['success' => 'Laporan berhasil dihapus'], 200);
     }
+
+    public function updateCommentAndStatus(Request $request, $report_id)
+{
+ 
+    $validatedData = $request->validate([
+        'comment' => 'nullable|string',
+        'status' => 'required|in:Diserahkan,Diterima,Pending',
+    ]);
+
+   
+    $report = Report::findOrFail($report_id);
+
+  
+    if ($request->has('comment')) {
+        $report->comment = $request->input('comment');
+    }
+
+    
+    $report->status = $request->input('status');
+
+   
+    $report->save();
+
+    return response()->json([
+        'message' => 'Komentar dan status berhasil diperbarui',
+        'data' => $report,
+    ], 200);
+}
+
 
 
 }

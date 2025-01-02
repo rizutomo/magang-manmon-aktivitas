@@ -55,6 +55,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('task/sector', [TaskController::class, 'getTaskBySector'])->name('task.indexSector');
         Route::get('task/sector/upcoming', [TaskController::class, 'upcomingTaskBySector'])->name('task.indexSectorUpcoming');
         Route::get('report/{task_id}', [ReportController::class, 'index'])->name('report.indexbytask');
+        Route::post('report/{report_id}/status', [ReportController::class, 'updateCommentAndStatus'])->name('report.status');
         
     });
     Route::middleware('role:admin|supervisor|user')->group(function () {
@@ -76,6 +77,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('task-{task_id}/team2', [ReportController::class, 'index'])->name('task.getTaskTeam');
         Route::post('report', [ReportController::class, 'store'])->name('report.store');
         Route::delete('report/{report_id}', [ReportController::class, 'destroy'])->name('report.delete');
+        Route::put('report/{report_id}', [ReportController::class, 'update'])->name('report.update');
         //AUTH
         Route::post('register', [AuthController::class, 'register']);
         Route::post('logout', [AuthController::class, 'logout'])->name('logout');

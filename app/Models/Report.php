@@ -10,6 +10,15 @@ use Illuminate\Support\Str;
 
 class Report extends Model
 {
+    protected $fillable = [
+        'task_id',
+        'date',
+        'description',
+        'latitude', 
+        'longitude',
+        'photo',
+        'modified_by'
+    ];
     use HasFactory;
 
     public $incrementing = false;
