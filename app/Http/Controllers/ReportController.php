@@ -14,35 +14,19 @@ use Illuminate\Support\Str;
 
 class ReportController extends Controller
 {
-    public function index($task_id)
+        public function index($task_id)
     {
         $task = Task::findOrFail($task_id);
 
-        // Ambil program yang berelasi dengan task
-        $program = $task->program;
+        // Ambil laporan yang berelasi dengan task
+        $report = $task->report; // Pastikan relasi ini sudah didefinisikan di model Task
 
-        if (!$program) {
-            return response([
-                'message' => 'Program tidak ditemukan untuk task ini.',
-            ], 404);
-        }
-
-        // Ambil semua user yang berelasi dengan task
-        $teamMembers = $task->users->map(function ($user) use ($program, $task) {
-            // Cari role user dalam program melalui tabel pivot
-            $role = $program->users()->where('users.id', $user->id)->first()->pivot->role ?? null;
-            $report = $task->report;
-            return [
-                'user' => $user,
-                'report' => $report,
-                'role' => $role,
-            ];
-        });
 
         return response([
-            'team_members' => $teamMembers,
+            'report' => $report,
         ], 200);
     }
+
 
 
     // public function show($program_id)
@@ -99,11 +83,13 @@ class ReportController extends Controller
 
         $existingReport = Report::where('task_id', $task_id)->first();
 
-        if ($existingReport) {
+        // dd($existingReport);
+
+        if (!$existingReport) {
             // Menghapus foto lama jika ada
-            if ($existingReport->photo && Storage::disk('public')->exists($existingReport->photo)) {
-                Storage::disk('public')->delete($existingReport->photo);
-            }
+            // if ($existingReport->photo && Storage::disk('public')->exists($existingReport->photo)) {
+            //     Storage::disk('public')->delete($existingReport->photo);
+            // }
 
             // Simpan foto baru jika ada
             if ($request->hasFile('photo')) {
@@ -111,36 +97,41 @@ class ReportController extends Controller
                 $photoPath = $photo->store('reportfoto/' . $task->id, 'public');
             } else {
                 $photoPath = null;
+                
             }
 
             // Update data pada tabel `reports`
-
-            $existingReport->photo = $photoPath;
+            $existingReport=new Report();
+            $existingReport->task_id = $request->input('task_id');
             $existingReport->date = $request->input('date');
-            $existingReport->desctiption = $request->input('description');
+            $existingReport->description = $request->input('description');
             $existingReport->latitude = $request->input('latitude');
             $existingReport->longitude = $request->input('longitude');
-
+            $existingReport->photo = $photoPath;
+            $existingReport->modified_by = $user_id;
+            $existingReport->save();
+            
             // $user->tasks()->updateExistingPivot($task_id, [
-            //     'photo' => $photoPath,
-            //     'date' => $request->input('date'),
-            //     'description' => $request->input('description'),
-            //     'latitude' => $request->input('latitude'),
-            //     'longitude' => $request->input('longitude'),
-            // ]);
-
-
-            // Simpan dokumen jika ada
-            if ($existingReport && $request->hasFile('documents')) {
-                foreach ($request->file('documents') as $document) {
-                    $documentPath = $document->store('reportdocs/' . $task->id, 'public');
-                    ReportFile::create([
-                        'report_id' => $existingReport->id,
-                        'name' => $documentPath,
-                    ]);
+                //     'photo' => $photoPath,
+                //     'date' => $request->input('date'),
+                //     'description' => $request->input('description'),
+                //     'latitude' => $request->input('latitude'),
+                //     'longitude' => $request->input('longitude'),
+                // ]);
+                
+                
+                // Simpan dokumen jika ada
+                if ($existingReport && $request->hasFile('documents')) {
+                    foreach ($request->file('documents') as $document) {
+                        $documentPath = $document->store('reportdocs/' . $task->id, 'public');
+                        ReportFile::create([
+                            'report_id' => $existingReport->id,
+                            'name' => $documentPath,
+                        ]);
+                    }
                 }
-            }
-
+                
+                
             return response()->json(['success' => 'Pengumpulan berhasil diperbarui'], 200);
         }
 
