@@ -330,4 +330,120 @@ public function show(string $id)
             'tasks' => $tasks
         ], 200);
     }
+    public function upcomingTaskByUser(Request $request)
+{
+    $user = $request->user();
+    $today = Carbon::today();
+
+   
+    $tasks = $user->tasks()
+        ->where('tasks.date', '>=', $today)
+        ->orderBy('tasks.date', 'asc') 
+        ->get();
+
+    if ($tasks->isEmpty()) {
+        return response()->json([
+            'message' => 'task tidak ditemukan'
+        ], 404);
+    }
+
+    return response()->json([
+        'tasks' => $tasks,
+        'total' => $tasks->count()
+    ], 200);
+}
+
+public function getTaskBySector()
+{
+    $user = auth()->user(); 
+    $sector = $user->sector; 
+    if (!$sector) {
+        return response([
+            'message' => 'Sektor tidak ditemukan untuk pengguna ini'
+        ], 404);
+    }
+
+    $tasks = $sector->programs()->with(['tasks.users' => function ($query) {
+        $query->withPivot('status');
+    }])->get()->flatMap(function ($program) {
+        return $program->tasks->map(function ($task) use ($program) {
+
+            return [
+                'id' => $task->id,
+                'name' => $task->name,
+                'description' => $task->description,
+                'program_name' => $program->name,
+                'date' => $task->date,
+                'host' => $task->host,
+                'time' => $task->time,
+                'location' => $task->location,
+                'users' => $task->users->map(function ($user) {
+                    return [
+                        'id' => $user->id,
+                        'name' => $user->name,
+                        'status' => $user->pivot->status,
+                    ];
+                })
+            ];
+        });
+    });
+
+    return response([
+        'tasks' => $tasks
+    ], 200);
+}
+
+public function upcomingTaskBySector()
+{
+    $user = auth()->user();
+    $sector = $user->sector;
+    $today = Carbon::today();
+
+    if (!$sector) {
+        return response([
+            'message' => 'Sektor tidak ditemukan untuk pengguna ini'
+        ], 404);
+    }
+
+    // Get upcoming tasks based on sector
+    $tasks = $sector->programs()->with(['tasks' => function ($query) use ($today) {
+        $query->where('date', '>=', $today)
+              ->orderBy('date', 'asc');
+    }, 'tasks.users' => function ($query) {
+        $query->withPivot('status');
+    }])->get()
+      ->flatMap(function ($program) {
+        return $program->tasks->map(function ($task) use ($program) {
+            return [
+                'id' => $task->id,
+                'name' => $task->name,
+                'description' => $task->description,
+                'program_name' => $program->name,
+                'date' => $task->date,
+                'host' => $task->host,
+                'time' => $task->time,
+                'location' => $task->location,
+                'users' => $task->users->map(function ($user) {
+                    return [
+                        'id' => $user->id,
+                        'name' => $user->name,
+                        'status' => $user->pivot->status,
+                    ];
+                })
+            ];
+        });
+    });
+
+    if ($tasks->isEmpty()) {
+        return response([
+            'message' => 'Tugas mendatang tidak ditemukan'
+        ], 404);
+    }
+
+    return response([
+        'tasks' => $tasks
+    ], 200);
+}
+
+
 }
