@@ -18,12 +18,16 @@ class ReportController extends Controller
     {
         $task = Task::findOrFail($task_id);
 
-        // Ambil laporan yang berelasi dengan task
-        $report = $task->report; // Pastikan relasi ini sudah didefinisikan di model Task
+        
+        $report = $task->report; 
+        $files = $report->files;
+        $user = $report->modified_by;
 
 
         return response([
             'report' => $report,
+            'files' => $files,
+            'user'  => $user
         ], 200);
     }
 

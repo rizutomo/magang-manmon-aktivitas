@@ -38,6 +38,12 @@ class Report extends Model
         return $this->hasMany(ReportFile::class);
     }
 
+    public function modified_by()
+    {
+
+        return $this->belongsTo(User::class);
+    }
+
     //UUID boot
     protected static function boot()
     {
