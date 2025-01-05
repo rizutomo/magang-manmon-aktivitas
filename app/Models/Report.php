@@ -38,10 +38,10 @@ class Report extends Model
         return $this->hasMany(ReportFile::class);
     }
 
-    public function modified_by()
+    public function modifiedBy()
     {
 
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'modified_by');
     }
 
     //UUID boot

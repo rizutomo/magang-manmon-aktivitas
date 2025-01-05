@@ -60,6 +60,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
     Route::middleware('role:admin|supervisor|user')->group(function () {
         //USER
+        Route::get('report/{task_id}', [ReportController::class, 'index'])->name('report.indexbytask');
         Route::get('task/count/user', [TaskController::class, 'getTaskCountByUser'])->name('task.getTaskCount');
         Route::get('program/count/user', [ProgramController::class, 'getProgramCountByUser'])->name('program.sectorCount');
         Route::get('user/program/', [ProgramController::class, 'getByUserId'])->name('program.getByUserId');
