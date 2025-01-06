@@ -10,7 +10,8 @@ use App\Http\Controllers\TeamController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\FileController;
 
-
+Route::get('storage/reportdocs/{uuid}/{filename}', [FileController::class, 'getFile']);
+Route::get('storage/reportfoto/{uuid}/{filename}', [FileController::class, 'getFoto']);
 Route::post('login', [AuthController::class, 'login']);
 Route::post('send-reset-code', [AuthController::class, 'sendResetCode']);
 Route::post('reset-password', [AuthController::class, 'resetPassword']);
@@ -81,8 +82,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('report', [ReportController::class, 'store'])->name('report.store');
         Route::delete('report/{report_id}', [ReportController::class, 'destroy'])->name('report.delete');
         Route::put('report/{report_id}', [ReportController::class, 'update'])->name('report.update');
-        Route::get('storage/reportdocs/{uuid}/{filename}', [FileController::class, 'getFile']);
-        Route::get('storage/reportfoto/{uuid}/{filename}', [FileController::class, 'getFoto']);
         //AUTH
         Route::post('register', [AuthController::class, 'register']);
         Route::post('logout', [AuthController::class, 'logout'])->name('logout');
