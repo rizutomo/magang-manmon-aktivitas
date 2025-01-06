@@ -8,6 +8,8 @@ use App\Http\Controllers\ProgramController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\TeamController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\FileController;
+
 
 Route::post('login', [AuthController::class, 'login']);
 Route::post('send-reset-code', [AuthController::class, 'sendResetCode']);
@@ -79,6 +81,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('report', [ReportController::class, 'store'])->name('report.store');
         Route::delete('report/{report_id}', [ReportController::class, 'destroy'])->name('report.delete');
         Route::put('report/{report_id}', [ReportController::class, 'update'])->name('report.update');
+        Route::get('storage/reportdocs/{uuid}/{filename}', [FileController::class, 'getFile']);
+        Route::get('storage/reportfoto/{uuid}/{filename}', [FileController::class, 'getFoto']);
         //AUTH
         Route::post('register', [AuthController::class, 'register']);
         Route::post('logout', [AuthController::class, 'logout'])->name('logout');
