@@ -20,20 +20,18 @@ class ProgramController extends Controller
             'tasks.users',
             'tasks.report'
         ])->get();
-
-        // dd($programs);
-
+    
         $programsData = $programs->map(function ($program) {
             $totalTasks = $program->tasks->count();
-
+    
             $completedTasks = $program->tasks->filter(function ($task) {
-                return $task->report && $task->report->status === ReportStatus::Diterima->value;
+                return $task->report && $task->report->status?->value === 'Diterima';
             })->count();
-
+    
             $coordinator = $program->users->filter(function ($user) {
                 return $user->pivot->role === 'koordinator';
             })->first();
-
+    
             return [
                 'id' => $program->id,
                 'name' => $program->name,
@@ -46,7 +44,7 @@ class ProgramController extends Controller
                 'coordinator' => $coordinator,
             ];
         });
-
+    
         return response([
             'programs' => $programsData
         ], 200);
