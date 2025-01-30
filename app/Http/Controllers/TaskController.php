@@ -63,6 +63,18 @@ class TaskController extends Controller
             'total' => $totalTask
         ], 200);
     }
+    public function getByUserProgram(Request $request)
+    {
+        $program_id = $request->program_id;
+        $user = $request->user();
+        $tasks = $user->tasks()->with('report')->where('program_id', $program_id)->get();
+        // $totalTask = $tasks->count();
+
+        return response([
+            'tasks' => $tasks,
+            // 'total' => $totalTask
+        ], 200);
+    }
 
     public function getTaskCount()
     {
@@ -142,6 +154,7 @@ class TaskController extends Controller
     return response()->json([
         'message' => 'Kegiatan berhasil ditambahkan',
         'task' => $task,
+        'taskfile' => $task->file,
     ], 201);
 }
 

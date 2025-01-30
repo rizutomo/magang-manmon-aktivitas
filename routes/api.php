@@ -63,6 +63,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
     Route::middleware('role:admin|supervisor|user')->group(function () {
         //USER
+        Route::get('reportMobile/{task_id}', [ReportController::class, 'index2'])->name('report.indexbytask');
         Route::get('report/{task_id}', [ReportController::class, 'index'])->name('report.indexbytask');
         Route::get('task/count/user', [TaskController::class, 'getTaskCountByUser'])->name('task.getTaskCount');
         Route::get('program/count/user', [ProgramController::class, 'getProgramCountByUser'])->name('program.sectorCount');
@@ -74,12 +75,14 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('program-{program_id}/task', [TaskController::class, 'index'])->name('task.index');
         Route::get('program/{program_id}/team', [TeamController::class, 'show'])->name('team.show');
         Route::get('user/task', [TaskController::class, 'getByUserId'])->name('task.getByUserId');
+        Route::get('user/program/{program_id}/task', [TaskController::class, 'getByUserProgram'])->name('task.getByUserProgram');
         Route::get('user/task/upcoming', [TaskController::class, 'upcomingTaskByUser'])->name('task.getByUserIdUpcoming');
         Route::get('count/task', [TaskController::class, 'getTotalbyUser'])->name('task.getTotalbyUser');
         Route::get('task/{id}', [TaskController::class, 'show'])->name('task.show');
         Route::get('task-{id}/team', [TaskController::class, 'getTaskTeam'])->name('task.getTaskTeam');
         Route::get('task-{task_id}/team2', [ReportController::class, 'index'])->name('task.getTaskTeam');
         Route::post('report', [ReportController::class, 'store'])->name('report.store');
+        Route::post('reportMobile', [ReportController::class, 'storeMobile'])->name('report.storeMobile');
         Route::delete('report/{report_id}', [ReportController::class, 'destroy'])->name('report.delete');
         Route::put('report/{report_id}', [ReportController::class, 'update'])->name('report.update');
         //AUTH
