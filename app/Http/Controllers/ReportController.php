@@ -123,6 +123,15 @@ class ReportController extends Controller
 
         // Simpan laporan
         $report->save();
+        //hapus dokumen lama
+        if ($request->hasFile('documents')){
+            foreach ($report->files as $file) {
+                if (Storage::disk('public')->exists($file->name)) {
+                    Storage::disk('public')->delete($file->name);
+                }
+                $file->delete();
+        }
+    }
 
         // Proses upload dokumen jika ada
         if ($request->hasFile('documents')) {
