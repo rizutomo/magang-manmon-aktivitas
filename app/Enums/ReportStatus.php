@@ -6,5 +6,5 @@ enum ReportStatus: string
 {
     case Diserahkan = 'Diserahkan';
     case Diterima = 'Diterima';
-    case Pending = 'Pending';
+    case Dikembalikan = 'Dikembalikan';
 }

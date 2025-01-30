@@ -240,12 +240,12 @@ class ReportController extends Controller
     }
 
     public function updateCommentAndStatus(Request $request, $report_id)
-    {
-
-        $validatedData = $request->validate([
-            'comment' => 'nullable|string',
-            'status' => 'required|in:Diserahkan,Diterima,Pending',
-        ]);
+{
+ 
+    $validatedData = $request->validate([
+        'comment' => 'nullable|string',
+        'status' => 'required|in:Diserahkan,Diterima,Dikembalikan',
+    ]);
 
 
         $report = Report::findOrFail($report_id);
