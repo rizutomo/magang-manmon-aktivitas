@@ -35,14 +35,14 @@ class ReportController extends Controller
     {
         $task = Task::findOrFail($task_id);
 
-        
-        $report = $task->report; 
+
+        $report = $task->report;
 
         if ($report->photo) {
             $report->photo = asset('storage/' . $report->photo);
         }
         $files = $report->files;
-        foreach ($files as $file){
+        foreach ($files as $file) {
 
             if ($file->name) {
                 $file->name = asset('storage/' . $file->name);
@@ -124,23 +124,23 @@ class ReportController extends Controller
         // Simpan laporan
         $report->save();
         //hapus dokumen lama
-        if ($request->hasFile('documents')){
+        if ($request->hasFile('documents')) {
             foreach ($report->files as $file) {
                 if (Storage::disk('public')->exists($file->name)) {
                     Storage::disk('public')->delete($file->name);
                 }
                 $file->delete();
+            }
         }
-    }
 
         // Proses upload dokumen jika ada
         if ($request->hasFile('documents')) {
             foreach ($request->file('documents') as $document) {
-            $documentPath = $document->store('reportdocs/' . $task_id, 'public');
-            ReportFile::create([
-                'report_id' => $report->id,
-                'name' => $documentPath,
-            ]);
+                $documentPath = $document->store('reportdocs/' . $task_id, 'public');
+                ReportFile::create([
+                    'report_id' => $report->id,
+                    'name' => $documentPath,
+                ]);
             }
         }
 
@@ -201,6 +201,15 @@ class ReportController extends Controller
         // Simpan laporan
         $report->save();
 
+        if ($request->hasFile('documents')) {
+            foreach ($report->files as $file) {
+                if (Storage::disk('public')->exists($file->name)) {
+                    Storage::disk('public')->delete($file->name);
+                }
+                $file->delete();
+            }
+        }
+
         // Proses upload dokumen jika ada
         if ($request->hasFile('documents')) {
             // foreach ($request->file('documents') as $document) {
@@ -249,12 +258,12 @@ class ReportController extends Controller
     }
 
     public function updateCommentAndStatus(Request $request, $report_id)
-{
- 
-    $validatedData = $request->validate([
-        'comment' => 'nullable|string',
-        'status' => 'required|in:Diserahkan,Diterima,Dikembalikan',
-    ]);
+    {
+
+        $validatedData = $request->validate([
+            'comment' => 'nullable|string',
+            'status' => 'required|in:Diserahkan,Diterima,Dikembalikan',
+        ]);
 
 
         $report = Report::findOrFail($report_id);

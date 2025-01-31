@@ -22,7 +22,7 @@ class TaskController extends Controller
 
     public function index($program_id)
     {
-        $tasks = Task::where('program_id', $program_id)->get();
+        $tasks = Task::where('program_id', $program_id)->with('report')->get();
         return response([
             'tasks' => $tasks,
         ], 200);

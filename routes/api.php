@@ -30,7 +30,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('program/upcoming', [ProgramController::class, 'upcomingPrograms'])->name('program.upcoming');
         Route::get('program/in-progress/count', [ProgramController::class, 'getProgramInProgressCount'])->name('program.inProgressCount');
         Route::get('program', [ProgramController::class, 'index'])->name('program.index');
-        Route::get('programProgress', [ProgramController::class, 'programWithProgress'])->name('program.index');
         Route::get('task/upcoming', [TaskController::class, 'upcomingTasks'])->name('task.upcoming');
         Route::get('task/count', [TaskController::class, 'getTaskCount'])->name('task.getTaskCount');
         Route::get('sector', [ProgramController::class, 'getSector'])->name('sector.get');
@@ -38,6 +37,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
     Route::middleware('role:admin|supervisor')->group(function () {
         //SUPERVISOR
+        Route::get('programProgress', [ProgramController::class, 'programWithProgress'])->name('program.index');
         Route::get('task/count/sector', [TaskController::class, 'getTaskCountBySector'])->name('task.getTaskCount'); 
         Route::get('program/ended/count/sector', [ProgramController::class, 'getEndedProgramCountBySector'])->name('program.endedCountSector');
         Route::get('program/count/sector', [ProgramController::class, 'getProgramCountBySector'])->name('program.countsector');
