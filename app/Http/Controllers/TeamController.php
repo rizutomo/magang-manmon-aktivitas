@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Program;
+use App\Models\Task;
 use App\Models\User;
 use App\Models\Team;
 use Illuminate\Http\Request;
@@ -103,16 +104,36 @@ class TeamController extends Controller
     }
 
     public function destroy(Request $request, $program_id)
-    {
-        $user = User::find($request->user_id);
-        if (!$user) {
-            return response([
-                'message' => 'Anggota tim tidak ditemukan'
-            ], 404);
-        }
-        $user->programs()->detach($program_id);
+{
+    $user = User::find($request->user_id);
+    $program = Program::find($program_id);
+
+    if (!$user) {
         return response([
-            'message' => 'Berhasil menghapus anggota tim',
-        ], 204);
+            'message' => 'Anggota tim tidak ditemukan'
+        ], 404);
     }
+
+    if (!$program) {
+        return response([
+            'message' => 'Program tidak ditemukan'
+        ], 404);
+    }
+
+    // Detach user dari program
+    $user->programs()->detach($program_id);
+
+    // Ambil semua tasks yang berelasi dengan program
+    $tasks = $program->tasks; 
+
+    // Loop setiap task dan detach user
+    foreach ($tasks as $task) {
+        $user->tasks()->detach($task->id);
+    }
+
+    return response([
+        'message' => 'Berhasil menghapus anggota tim dari program dan tugas terkait',
+    ], 204);
+}
+
 }
