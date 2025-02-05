@@ -150,7 +150,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // TEAM
-        $user1->programs()->attach($program1->id, ['role' => 'koordinator']);
+        $user1->programs()->attach($program1->id, ['role' => 'ketua']);
         $user2->programs()->attach($program1->id, ['role' => 'anggota']);
         $user3->programs()->attach($program1->id, ['role' => 'anggota']);
         $user4->programs()->attach($program1->id, ['role' => 'anggota']);

@@ -29,7 +29,7 @@ class ProgramController extends Controller
             })->count();
     
             $coordinator = $program->users->filter(function ($user) {
-                return $user->pivot->role === 'koordinator';
+                return $user->pivot->role === 'ketua';
             })->first();
     
             return [
@@ -105,7 +105,7 @@ class ProgramController extends Controller
             })->count();
 
             $coordinator = $program->users->filter(function ($user) {
-                return $user->pivot->role === 'koordinator';
+                return $user->pivot->role === 'ketua';
             })->first();
 
             return [
@@ -328,7 +328,7 @@ class ProgramController extends Controller
             })->count();
 
             $coordinator = $program->users->filter(function ($user) {
-                return $user->pivot->role === 'koordinator';
+                return $user->pivot->role === 'ketua';
             })->first();
 
             return [
@@ -371,7 +371,7 @@ class ProgramController extends Controller
             })->count();
 
             $coordinator = $program->users->filter(function ($user) {
-                return $user->pivot->role === 'koordinator';
+                return $user->pivot->role === 'ketua';
             })->first();
 
             return [
