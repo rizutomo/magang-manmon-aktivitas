@@ -22,6 +22,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('user/count', [AuthController::class, 'getUserCount']);
 
         //ADMIN
+
+        
+    });
+    Route::middleware('role:admin|supervisor')->group(function () {
+        //SUPERVISOR
         Route::post('program', [ProgramController::class, 'store'])->name('program.store');
         Route::put('program/{id}', [ProgramController::class, 'update'])->name('program.update');
         Route::delete('program/{id}', [ProgramController::class, 'destroy'])->name('program.destroy');
@@ -33,10 +38,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('task/upcoming', [TaskController::class, 'upcomingTasks'])->name('task.upcoming');
         Route::get('task/count', [TaskController::class, 'getTaskCount'])->name('task.getTaskCount');
         Route::get('sector', [ProgramController::class, 'getSector'])->name('sector.get');
-        
-    });
-    Route::middleware('role:admin|supervisor')->group(function () {
-        //SUPERVISOR
+        Route::get('sectorUser', [ProgramController::class, 'getUserSector'])->name('sector.get');
         Route::get('programProgress', [ProgramController::class, 'programWithProgress'])->name('program.index');
         Route::get('task/count/sector', [TaskController::class, 'getTaskCountBySector'])->name('task.getTaskCount'); 
         Route::get('program/ended/count/sector', [ProgramController::class, 'getEndedProgramCountBySector'])->name('program.endedCountSector');

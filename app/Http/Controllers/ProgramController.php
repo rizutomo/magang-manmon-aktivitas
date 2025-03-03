@@ -60,6 +60,26 @@ class ProgramController extends Controller
         ], 200);
     }
 
+    public function getUserSector()
+    {
+        $user = auth()->user();
+    
+        $sector = Sector::with('user') 
+            ->where('id', $user->sector_id) 
+            ->first();
+    
+        if (!$sector) {
+            return response()->json([
+                'message' => 'Sector tidak ditemukan untuk user ini'
+            ], 404);
+        }
+    
+        return response()->json([
+            'sector' => $sector
+        ], 200);
+    }
+    
+
     public function index()
     {
         $programs = Program::with('tasks', 'users')->get();
