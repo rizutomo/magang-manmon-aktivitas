@@ -219,7 +219,6 @@ class ProgramController extends Controller
     {
         $validatedData = $request->validate([
             'name' => 'required|string',
-            'sector_id' => 'required|string',
             'description' => 'required|string',
             'start_date' => 'required|date',
             'end_date' => 'required|date',
@@ -234,7 +233,6 @@ class ProgramController extends Controller
         }
 
         $program->name = $request->name;
-        $program->sector_id = $request->sector_id;
         $program->description = $request->description;
         $program->start_date = $request->start_date;
         $program->end_date = $request->end_date;
