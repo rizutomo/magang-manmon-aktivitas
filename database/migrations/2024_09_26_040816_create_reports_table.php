@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('reports', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('task_id');
-            $table->string('photo')->nullable();
             $table->string('description')->nullable();
             $table->string('longitude')->nullable();
             $table->string('latitude')->nullable();

@@ -16,7 +16,6 @@ class Report extends Model
         'description',
         'latitude', 
         'longitude',
-        'photo',
         'modified_by'
     ];
     use HasFactory;
@@ -43,6 +42,12 @@ class Report extends Model
 
         return $this->belongsTo(User::class, 'modified_by');
     }
+
+        public function photos()
+    {
+        return $this->hasMany(ReportPhoto::class);
+    }
+
 
     //UUID boot
     protected static function boot()
