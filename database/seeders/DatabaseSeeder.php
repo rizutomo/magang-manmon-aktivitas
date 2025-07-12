@@ -193,7 +193,6 @@ class DatabaseSeeder extends Seeder
         $Report1 = Report::create([
             'id' => Str::uuid(),
             'task_id' => $task1->id,
-            'photo' => 'report_photo.jpg',
             'description' => 'CCTV berhasil diperbaiki',
             'longitude' => '-7.595910857727733',
             'latitude' => '110.94004966685802',
@@ -204,7 +203,6 @@ class DatabaseSeeder extends Seeder
         $Report2 = Report::create([
             'id' => Str::uuid(),
             'task_id' => $task3->id,
-            'photo' => 'report_photo.jpg',
             'description' => 'Router Wi-Fi berhasil diperbaiki',
             'longitude' => '-7.595910857727733',
             'latitude' => '110.94004966685802',
