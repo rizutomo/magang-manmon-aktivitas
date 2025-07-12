@@ -21,12 +21,14 @@ class ReportController extends Controller
 
         $report = $task->report;
         $files = $report->files;
+        $photos = $report->photos;
         $user = $report->modifiedBy;
 
 
         return response([
             'report' => $report,
             'files' => $files,
+            'photos' => $photos,
             'user' => $user ? $user->name : null
         ], 200);
     }
